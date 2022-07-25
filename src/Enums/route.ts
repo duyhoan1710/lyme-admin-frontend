@@ -1,3 +1,7 @@
 export enum EAppRoutes {
-    PATH_HOME = "/",
+    HOME = "/",
+    CATEGORY = "/categories",
+    PRODUCT = "/products",
+    ORDER = '/orders',
+    EVALUATE = "/evaluates",
 }

@@ -1,13 +1,63 @@
 import { UploadOutlined, UserOutlined, VideoCameraOutlined } from "@ant-design/icons";
-import { Layout, Menu } from "antd";
+import { AppstoreOutlined, MailOutlined, SettingOutlined } from "@ant-design/icons";
+import { Avatar, Dropdown, Layout, Menu } from "antd";
+
+import type { MenuProps } from "antd";
 
 import { ILayout } from "@interfaces";
 import { LayoutStyle } from "./styles";
+import { useState } from "react";
+import { EAppRoutes } from "@enums";
+import { useHistory, useLocation } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
 
+const items: MenuProps["items"] = [
+    {
+        label: "Navigation One",
+        key: "mail",
+        icon: <MailOutlined />,
+    },
+    {
+        label: "Navigation Two",
+        key: "app",
+        icon: <AppstoreOutlined />,
+    },
+    {
+        label: "Navigation Three",
+        key: "SubMenu",
+        icon: <SettingOutlined />,
+    },
+];
+
+const dropdownProfile = (
+    <Menu
+        items={[
+            {
+                key: "1",
+                label: "Profile",
+            },
+            {
+                key: "3",
+                label: "Setting",
+            },
+            {
+                key: "4",
+                danger: true,
+                label: "Logout",
+            },
+        ]}
+    />
+);
+
 export const AppLayout = (props: ILayout) => {
     const { children } = props;
+    const history = useHistory();
+    const { pathname } = useLocation();
+
+    const onClick: MenuProps["onClick"] = (e) => {
+        history.push(e.key);
+    };
 
     return (
         <LayoutStyle>
@@ -27,34 +77,65 @@ export const AppLayout = (props: ILayout) => {
                 <Menu
                     theme="dark"
                     mode="inline"
-                    defaultSelectedKeys={["1"]}
+                    onClick={onClick}
+                    selectedKeys={[pathname]}
                     items={[
                         {
-                            key: "1",
+                            key: EAppRoutes.CATEGORY,
                             icon: <UserOutlined />,
-                            label: "nav 1",
+                            label: "Loại Sản Phẩm",
                         },
                         {
-                            key: "2",
+                            key: EAppRoutes.PRODUCT,
                             icon: <VideoCameraOutlined />,
-                            label: "nav 2",
+                            label: "Sản Phẩm",
                         },
                         {
-                            key: "3",
+                            key: EAppRoutes.ORDER,
                             icon: <UploadOutlined />,
-                            label: "nav 3",
+                            label: "Đơn Hàng",
+                        },
+                        {
+                            key: EAppRoutes.EVALUATE,
+                            icon: <UploadOutlined />,
+                            label: "Đánh Giá - Bình Luận",
                         },
                     ]}
                 />
             </Sider>
             <Layout className="site-layout" style={{ marginLeft: 200 }}>
-                <Header className="site-layout-background" style={{ padding: 0 }}></Header>
+                <Header
+                    className="site-layout-background"
+                    style={{ padding: "0 16px", display: "flex", justifyContent: "space-between" }}
+                >
+                    <Menu mode="horizontal" items={items} style={{ flexGrow: 1 }} />
+
+                    <div>
+                        <span>Xin Chào Nguyễn Duy Hoàn</span>
+                        <Dropdown overlay={dropdownProfile} placement="bottom" arrow>
+                            <a onClick={(e) => e.preventDefault()}>
+                                <Avatar
+                                    style={{
+                                        color: "#f56a00",
+                                        backgroundColor: "#fde3cf",
+                                        marginLeft: 10,
+                                        marginRight: 5,
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    HN
+                                </Avatar>
+                            </a>
+                        </Dropdown>
+                    </div>
+                </Header>
+
                 <Content
                     className="site-layout-background"
                     style={{
                         margin: "24px 16px",
                         padding: 24,
-                        minHeight: 280,
+                        minHeight: 'calc(100vh - 112px)',
                     }}
                 >
                     {children}
