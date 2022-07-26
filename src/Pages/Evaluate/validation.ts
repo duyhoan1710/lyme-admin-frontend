@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-export const createCategorySchema = Yup.object().shape({
+export const createEvaluationSchema = Yup.object().shape({
     categoryName: Yup.string().required("Trường bắt buộc !"),
     categoryImage: Yup.mixed()
         .required("Trường bắt buộc !")

@@ -3,15 +3,15 @@ import { UploadOutlined } from "@ant-design/icons";
 import { useFormik } from "formik";
 import { IModal } from "src/Interfaces/component";
 import { RcFile } from "antd/lib/upload";
-import { createCategorySchema } from "./validation";
+import { createEvaluationSchema } from "./validation";
 
-export const ModalCreateCategory = ({ isModalVisible, handleCancel }: IModal) => {
+export const ModalCreateEvaluate = ({ isModalVisible, handleCancel }: IModal) => {
     const formik = useFormik({
         initialValues: {
             categoryName: "",
             categoryImage: "",
         },
-        validationSchema: createCategorySchema,
+        validationSchema: createEvaluationSchema,
         onSubmit: (value) => {
             console.log(value);
         },

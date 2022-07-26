@@ -2,7 +2,9 @@ import React from "react";
 import { BrowserRouter, Switch } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ToastContainer } from 'react-toastify';
 
+import 'react-toastify/dist/ReactToastify.css';
 import "./App.css";
 import { routes } from "src/Routers";
 import { ComponentAppRoute } from "src/Components/AppRoutes";
@@ -23,6 +25,7 @@ function App() {
                     {/* <ComponentToast /> */}
                 </BrowserRouter>
 
+                <ToastContainer />
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
         </div>

@@ -1,4 +1,4 @@
-import { Button, Table, Image } from "antd";
+import { Button, Table, Image, Modal } from "antd";
 import React, { useState } from "react";
 import type { ColumnsType } from "antd/es/table";
 import styled from "styled-components";
@@ -23,7 +23,7 @@ export const Category = () => {
             title: "Image",
             dataIndex: "image",
             width: "250px",
-            render: (value) => <Image src={value} width={90} height={60} preview={false} />
+            render: (value) => <Image src={value} width={80} height={50} preview={false} />,
         },
         {
             title: "Name",
@@ -32,7 +32,7 @@ export const Category = () => {
         {
             title: "",
             dataIndex: "action",
-            width: "180px",
+            width: "150px",
         },
     ];
 
@@ -45,7 +45,7 @@ export const Category = () => {
             action: (
                 <div className="action-column">
                     <Button type="primary">Sửa</Button>
-                    <Button>Xóa</Button>
+                    <Button onClick={() => setIsOpenModalRemoveCategory(true)}>Xóa</Button>
                 </div>
             ),
         },
@@ -57,7 +57,7 @@ export const Category = () => {
             action: (
                 <div className="action-column">
                     <Button type="primary">Sửa</Button>
-                    <Button>Xóa</Button>
+                    <Button onClick={() => setIsOpenModalRemoveCategory(true)}>Xóa</Button>
                 </div>
             ),
         },
@@ -69,13 +69,14 @@ export const Category = () => {
             action: (
                 <div className="action-column">
                     <Button type="primary">Sửa</Button>
-                    <Button>Xóa</Button>
+                    <Button onClick={() => setIsOpenModalRemoveCategory(true)}>Xóa</Button>
                 </div>
             ),
         },
     ];
 
     const [isOpenModalCreateCategory, setIsOpenCreateCategory] = useState(false);
+    const [isOpenModalRemoveCategory, setIsOpenModalRemoveCategory] = useState(false);
 
     return (
         <StyledCategory>
@@ -90,6 +91,17 @@ export const Category = () => {
             </div>
 
             <Table columns={columns} dataSource={data} size="middle" bordered />
+
+            <Modal
+                title="Xóa loại sản phẩm"
+                visible={isOpenModalRemoveCategory}
+                onOk={() => setIsOpenModalRemoveCategory(false)}
+                onCancel={() => setIsOpenModalRemoveCategory(false)}
+                okText="Đồng ý"
+                cancelText="Đóng"
+            >
+                Bạn có chắc chắn muốn xóa ?
+            </Modal>
         </StyledCategory>
     );
 };

@@ -3,15 +3,15 @@ import { UploadOutlined } from "@ant-design/icons";
 import { useFormik } from "formik";
 import { IModal } from "src/Interfaces/component";
 import { RcFile } from "antd/lib/upload";
-import { createCategorySchema } from "./validation";
+// import { createSchema } from "./validation";
 
-export const ModalCreateCategory = ({ isModalVisible, handleCancel }: IModal) => {
+export const ModalDetailProduct = ({ isModalVisible, handleCancel }: IModal) => {
     const formik = useFormik({
         initialValues: {
             categoryName: "",
             categoryImage: "",
         },
-        validationSchema: createCategorySchema,
+        // validationSchema: createSchema,
         onSubmit: (value) => {
             console.log(value);
         },
@@ -35,14 +35,14 @@ export const ModalCreateCategory = ({ isModalVisible, handleCancel }: IModal) =>
 
     return (
         <Modal
-            title="Thêm mới loại sản phẩm"
+            title="Chi tiết sản phẩm"
             visible={isModalVisible}
             onOk={() => formik.handleSubmit()}
             onCancel={handleCancel}
             okText="Đồng ý"
             cancelText="Đóng"
         >
-            <Form colon={false} labelAlign="left" {...formItemLayout}>
+            {/* <Form colon={false} labelAlign="left" {...formItemLayout}>
                 <Form.Item
                     label="Loại sản phẩm"
                     name="categoryName"
@@ -70,7 +70,7 @@ export const ModalCreateCategory = ({ isModalVisible, handleCancel }: IModal) =>
                         <Button icon={<UploadOutlined />}>Click to upload</Button>
                     </Upload>
                 </Form.Item>
-            </Form>
+            </Form> */}
         </Modal>
     );
 };

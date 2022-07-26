@@ -38,3 +38,21 @@
     transform: rotate(360deg);
   }
 } */
+
+.three-dot {
+  display: inline-block;
+  width: 180px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
+.three-dot-multiple-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  width: 300px;
+  /* limit to 2 lines */
+}
