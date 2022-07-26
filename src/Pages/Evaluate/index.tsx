@@ -1,4 +1,4 @@
-import { Button, Image, Modal } from "antd";
+import { Button, Col, Image, Input, Modal, Row } from "antd";
 import Table, { ColumnsType } from "antd/lib/table";
 import React, { useState } from "react";
 import { ButtonAddStyle } from "src/Components/Common/button";
@@ -27,26 +27,26 @@ export const Evaluate = () => {
             title: "Avatar",
             dataIndex: "avatar",
             width: "120px",
-            render: (value) => <Image src={value} width={90} height={60} preview={false} />,
+            render: (value) => <Image src={value} width={80} height={50} preview={false} />,
         },
         {
-            title: "Full Name",
+            title: "Người mua",
             dataIndex: "username",
         },
         {
-            title: "Product Code",
+            title: "Mã SP",
             dataIndex: "productCode",
         },
         {
-            title: "Product Name",
+            title: "Tên SP",
             dataIndex: "productName",
         },
         {
-            title: "Rate",
+            title: "Đánh giá",
             dataIndex: "rate",
         },
         {
-            title: "Content",
+            title: "Nội dung",
             dataIndex: "content",
             render: (value) => <div className="three-dot-multiple-line">{value}</div>,
         },
@@ -133,14 +133,25 @@ export const Evaluate = () => {
 
     return (
         <StyledEvaluate>
-            <div className="add-more-button">
-                <ButtonAddStyle onClick={() => setIsOpenCreateCategory(true)}>
-                    Thêm Mới
-                </ButtonAddStyle>
-                <ModalCreateEvaluate
-                    isModalVisible={isOpenModalCreateEvaluate}
-                    handleCancel={() => setIsOpenCreateCategory(false)}
-                />
+            <div className="filter">
+                <Row gutter={30} className="input-group">
+                    <Col md={5}>
+                        <Input placeholder="Người mua hoặc SĐT" />
+                    </Col>
+                    <Col md={5}>
+                        <Input placeholder="Mã SP hoặc tên SP" />
+                    </Col>
+                </Row>
+
+                <div className="add-more-button">
+                    <ButtonAddStyle onClick={() => setIsOpenCreateCategory(true)}>
+                        Thêm Mới
+                    </ButtonAddStyle>
+                    <ModalCreateEvaluate
+                        isModalVisible={isOpenModalCreateEvaluate}
+                        handleCancel={() => setIsOpenCreateCategory(false)}
+                    />
+                </div>
             </div>
 
             <Table columns={columns} dataSource={data} size="middle" bordered />
@@ -160,10 +171,14 @@ export const Evaluate = () => {
 };
 
 const StyledEvaluate = styled.div`
-    .add-more-button {
+    .filter {
         margin-bottom: 15px;
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
+
+        .input-group {
+            flex-grow: 1;
+        }
     }
 
     .action-column {

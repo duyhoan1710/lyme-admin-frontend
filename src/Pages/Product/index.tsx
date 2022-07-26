@@ -1,4 +1,4 @@
-import { Button, Row, Col, Modal } from "antd";
+import { Button, Row, Col, Modal, Input } from "antd";
 import { useState } from "react";
 import { ButtonAddStyle } from "src/Components/Common/button";
 import styled from "styled-components";
@@ -13,14 +13,25 @@ export const Product = () => {
 
     return (
         <StyledProduct>
-            <div className="add-more-button">
-                <ButtonAddStyle onClick={() => setIsOpenModalCreateProduct(true)}>
-                    Thêm Mới
-                </ButtonAddStyle>
-                <ModalCreateProduct
-                    isModalVisible={isOpenModalCreateProduct}
-                    handleCancel={() => setIsOpenModalCreateProduct(false)}
-                />
+            <div className="filter">
+                <Row gutter={30} className="input-group">
+                    <Col md={5}>
+                        <Input placeholder="Người mua hoặc SĐT" />
+                    </Col>
+                    <Col md={5}>
+                        <Input placeholder="Mã SP hoặc tên SP" />
+                    </Col>
+                </Row>
+
+                <div className="add-more-button">
+                    <ButtonAddStyle onClick={() => setIsOpenModalCreateProduct(true)}>
+                        Thêm Mới
+                    </ButtonAddStyle>
+                    <ModalCreateProduct
+                        isModalVisible={isOpenModalCreateProduct}
+                        handleCancel={() => setIsOpenModalCreateProduct(false)}
+                    />
+                </div>
             </div>
 
             <Row className="custom-header">
@@ -28,16 +39,16 @@ export const Product = () => {
                     Id
                 </Col>
                 <Col md={3} className="custom-col">
-                    Code
+                    Mã SP
                 </Col>
                 <Col md={6} className="custom-col">
-                    Name
+                    Tên SP
                 </Col>
                 <Col md={3} className="custom-col">
-                    Price
+                    Giá
                 </Col>
                 <Col md={7} className="custom-col">
-                    Description
+                    Mô tả
                 </Col>
                 <Col md={3} className="custom-col action-column"></Col>
             </Row>
@@ -187,10 +198,14 @@ export const Product = () => {
 };
 
 const StyledProduct = styled.div`
-    .add-more-button {
+    .filter {
         margin-bottom: 15px;
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
+
+        .input-group {
+            flex-grow: 1;
+        }
     }
 
     .custom-header {

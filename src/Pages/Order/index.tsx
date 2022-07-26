@@ -1,8 +1,11 @@
-import { Button, Image, Modal, Table } from "antd";
+import { Button, Col, Image, Input, Modal, Row, Table, Select } from "antd";
 import { ColumnsType } from "antd/lib/table";
 import React, { useState } from "react";
 import { formatDateTime } from "src/Utils/dateTime";
 import styled from "styled-components";
+import { isNullishCoalesce } from "typescript";
+
+const { Option } = Select;
 
 export const Order = () => {
     interface DataType {
@@ -158,8 +161,31 @@ export const Order = () => {
 
     const [isOpenModalRemoveOrder, setIsOpenModalRemoveOrder] = useState(false);
 
+    const handleChange = (value: string) => {
+        console.log(`selected ${value}`);
+    };
+
     return (
         <StyledEvaluate>
+            <div className="filter">
+                <Row gutter={30}>
+                    <Col md={5}>
+                        <Input placeholder="Người mua hoặc SĐT" />
+                    </Col>
+                    <Col md={5}>
+                        <Input placeholder="Mã SP hoặc tên SP" />
+                    </Col>
+                    <Col md={5}>
+                        <Select defaultValue={null} onChange={handleChange} style={{ width: 200 }}>
+                            <Option value={null}>Tất Cả</Option>
+                            <Option value="1">PENDING</Option>
+                            <Option value="2">SUCCESS</Option>
+                            <Option value="3">REJECT</Option>
+                        </Select>
+                    </Col>
+                </Row>
+            </div>
+
             <Table columns={columns} dataSource={data} size="middle" bordered />
 
             <Modal
@@ -177,6 +203,10 @@ export const Order = () => {
 };
 
 const StyledEvaluate = styled.div`
+    .filter {
+        margin-bottom: 15px;
+    }
+
     .action-column {
         display: flex;
         justify-content: center;
