@@ -1,3 +1,4 @@
+import { formatVND } from "@utils";
 import { Button, Row, Col, Modal, Input, Select } from "antd";
 import { useState } from "react";
 import { ButtonAddStyle } from "src/Components/Common/button";
@@ -22,7 +23,11 @@ export const Product = () => {
                     </Col>
 
                     <Col md={5}>
-                        <Select defaultValue={null} style={{ width: 200 }}>
+                        <Input placeholder="Loại SP" />
+                    </Col>
+
+                    <Col md={5}>
+                        <Select defaultValue="1" style={{ width: 200 }}>
                             <Option value={null}>Tất Cả</Option>
                             <Option value="1">Lượt View</Option>
                             <Option value="2">Lượt Thanh Toán</Option>
@@ -30,7 +35,7 @@ export const Product = () => {
                     </Col>
 
                     <Col md={5}>
-                        <Select defaultValue={null} style={{ width: 200 }}>
+                        <Select defaultValue="1" style={{ width: 200 }}>
                             <Option value={null}>Tất Cả</Option>
                             <Option value="1">Mới Nhất</Option>
                             <Option value="2">Cũ Nhất</Option>
@@ -56,15 +61,19 @@ export const Product = () => {
                 <Col md={2} className="custom-col">
                     Mã SP
                 </Col>
-                <Col md={5} className="custom-col">
+                <Col md={4} className="custom-col">
                     Tên SP
                 </Col>
-                <Col md={2} className="custom-col">
+                <Col md={3} className="custom-col">
+                    Loại SP
+                </Col>
+                <Col md={3} className="custom-col">
                     Giá
                 </Col>
-                <Col md={6} className="custom-col">
-                    Mô tả
+                <Col md={3} className="custom-col">
+                    Giảm giá
                 </Col>
+
                 <Col md={2} className="custom-col">
                     Lượt View
                 </Col>
@@ -73,6 +82,7 @@ export const Product = () => {
                 </Col>
                 <Col md={3} className="custom-col action-column"></Col>
             </Row>
+
             <Row className="custom-row" onClick={() => setIsOpenModalDetailProduct(true)}>
                 <Col md={1} className="custom-col">
                     1
@@ -80,15 +90,17 @@ export const Product = () => {
                 <Col md={2} className="custom-col">
                     ZA10000
                 </Col>
-                <Col md={5} className="custom-col">
+                <Col md={4} className="custom-col">
                     Áo dài trung quốc chất lượng{" "}
                 </Col>
-                <Col md={2} className="custom-col">
-                    1000000đ
+                <Col md={3} className="custom-col">
+                    Quần
                 </Col>
-                <Col md={6} className="custom-col three-dot">
-                    A dog is a type of domesticated animal. Known for its loyalty and faithfulness,
-                    it can be found as a welcome guest in many households across the world
+                <Col md={3} className="custom-col">
+                    {formatVND(100000)}
+                </Col>
+                <Col md={3} className="custom-col">
+                    10%
                 </Col>
                 <Col md={2} className="custom-col">
                     374
@@ -117,15 +129,17 @@ export const Product = () => {
                 <Col md={2} className="custom-col">
                     ZA10000
                 </Col>
-                <Col md={5} className="custom-col">
+                <Col md={4} className="custom-col">
                     Áo dài trung quốc chất lượng{" "}
                 </Col>
-                <Col md={2} className="custom-col">
-                    1000000đ
+                <Col md={3} className="custom-col">
+                    Giày-Dép
                 </Col>
-                <Col md={6} className="custom-col three-dot">
-                    A dog is a type of domesticated animal. Known for its loyalty and faithfulness,
-                    it can be found as a welcome guest in many households across the world
+                <Col md={3} className="custom-col">
+                    {formatVND(100000)}
+                </Col>
+                <Col md={3} className="custom-col">
+                    10%
                 </Col>
                 <Col md={2} className="custom-col">
                     374
@@ -155,15 +169,17 @@ export const Product = () => {
                 <Col md={2} className="custom-col">
                     ZA10000
                 </Col>
-                <Col md={5} className="custom-col">
+                <Col md={4} className="custom-col">
                     Áo dài trung quốc chất lượng{" "}
                 </Col>
-                <Col md={2} className="custom-col">
-                    1000000đ
+                <Col md={3} className="custom-col">
+                    Quần
                 </Col>
-                <Col md={6} className="custom-col three-dot">
-                    A dog is a type of domesticated animal. Known for its loyalty and faithfulness,
-                    it can be found as a welcome guest in many households across the world
+                <Col md={3} className="custom-col">
+                    {formatVND(100000)}
+                </Col>
+                <Col md={3} className="custom-col">
+                    10%
                 </Col>
                 <Col md={2} className="custom-col">
                     374
@@ -193,15 +209,17 @@ export const Product = () => {
                 <Col md={2} className="custom-col">
                     ZA10000
                 </Col>
-                <Col md={5} className="custom-col">
+                <Col md={4} className="custom-col">
                     Áo dài trung quốc chất lượng{" "}
                 </Col>
-                <Col md={2} className="custom-col">
-                    1000000đ
+                <Col md={3} className="custom-col">
+                    Áo
                 </Col>
-                <Col md={6} className="custom-col three-dot">
-                    A dog is a type of domesticated animal. Known for its loyalty and faithfulness,
-                    it can be found as a welcome guest in many households across the world
+                <Col md={3} className="custom-col">
+                    {formatVND(100000)}
+                </Col>
+                <Col md={3} className="custom-col">
+                    10%
                 </Col>
                 <Col md={2} className="custom-col">
                     374
@@ -231,15 +249,17 @@ export const Product = () => {
                 <Col md={2} className="custom-col">
                     ZA10000
                 </Col>
-                <Col md={5} className="custom-col">
+                <Col md={4} className="custom-col">
                     Áo dài trung quốc chất lượng{" "}
                 </Col>
-                <Col md={2} className="custom-col">
-                    1000000đ
+                <Col md={3} className="custom-col">
+                    Mũ
                 </Col>
-                <Col md={6} className="custom-col three-dot">
-                    A dog is a type of domesticated animal. Known for its loyalty and faithfulness,
-                    it can be found as a welcome guest in many households across the world
+                <Col md={3} className="custom-col">
+                    {formatVND(100000)}
+                </Col>
+                <Col md={3} className="custom-col">
+                    10%
                 </Col>
                 <Col md={2} className="custom-col">
                     374

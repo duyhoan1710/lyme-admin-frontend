@@ -90,7 +90,7 @@ export const Category = () => {
                 />
             </div>
 
-            <Table columns={columns} dataSource={data} size="middle" bordered />
+            <Table columns={columns} dataSource={data} size="middle" bordered pagination={false} />
 
             <Modal
                 title="Xóa loại sản phẩm"

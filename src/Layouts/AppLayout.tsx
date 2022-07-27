@@ -73,7 +73,7 @@ export const AppLayout = (props: ILayout) => {
                     bottom: 0,
                 }}
             >
-                <div className="logo" />
+                <div className="logo"><i>Lyme Admin</i></div>
                 <Menu
                     theme="dark"
                     mode="inline"
@@ -106,10 +106,8 @@ export const AppLayout = (props: ILayout) => {
             <Layout className="site-layout" style={{ marginLeft: 200 }}>
                 <Header
                     className="site-layout-background"
-                    style={{ padding: "0 16px", display: "flex", justifyContent: "space-between" }}
+                    style={{ padding: "0 16px", display: "flex", justifyContent: "flex-end" }}
                 >
-                    <Menu mode="horizontal" items={items} style={{ flexGrow: 1 }} />
-
                     <div>
                         <span>Xin Chào Nguyễn Duy Hoàn</span>
                         <Dropdown overlay={dropdownProfile} placement="bottom" arrow>

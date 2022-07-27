@@ -2,6 +2,7 @@ import { Button, Col, Image, Input, Modal, Row } from "antd";
 import Table, { ColumnsType } from "antd/lib/table";
 import React, { useState } from "react";
 import { ButtonAddStyle } from "src/Components/Common/button";
+import { formatDateTime } from "src/Utils/dateTime";
 import styled from "styled-components";
 import { ModalCreateEvaluate } from "./create";
 
@@ -10,28 +11,27 @@ export const Evaluate = () => {
         key: React.Key;
         id: number;
         username: string;
-        avatar: string;
+        phone: string;
         productCode: string;
         productName: string;
         content: string;
         rate: number;
         action: React.ReactElement;
+        createAt: string;
     }
 
     const columns: ColumnsType<DataType> = [
         {
-            title: "Id",
+            title: "STT",
             dataIndex: "id",
-        },
-        {
-            title: "Avatar",
-            dataIndex: "avatar",
-            width: "120px",
-            render: (value) => <Image src={value} width={80} height={50} preview={false} />,
         },
         {
             title: "Người mua",
             dataIndex: "username",
+        },
+        {
+            title: "SĐT",
+            dataIndex: "phone",
         },
         {
             title: "Mã SP",
@@ -51,6 +51,10 @@ export const Evaluate = () => {
             render: (value) => <div className="three-dot-multiple-line">{value}</div>,
         },
         {
+            title: "Ngày tạo",
+            dataIndex: "createAt",
+        },
+        {
             title: "",
             dataIndex: "action",
             width: "150px",
@@ -62,10 +66,47 @@ export const Evaluate = () => {
             key: "1",
             id: 1,
             username: "John Brown",
-            avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
+            phone: "0123456789",
             productCode: "ZA101010",
             productName: "listym shot term",
             rate: 4.6,
+            content:
+                "1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letra",
+            createAt: formatDateTime(),
+            action: (
+                <div className="action-column">
+                    <Button type="primary">Sửa</Button>
+                    <Button onClick={() => setIsOpenModalRemoveCategory(true)}>Xóa</Button>
+                </div>
+            ),
+        },
+        {
+            key: "1",
+            id: 1,
+            username: "John Brown",
+            phone: "0123456789",
+            productCode: "ZA101010",
+            productName: "listym shot term",
+            rate: 4.6,
+            content:
+                "1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letra",
+            createAt: formatDateTime(),
+            action: (
+                <div className="action-column">
+                    <Button type="primary">Sửa</Button>
+                    <Button onClick={() => setIsOpenModalRemoveCategory(true)}>Xóa</Button>
+                </div>
+            ),
+        },
+        {
+            key: "1",
+            id: 1,
+            username: "John Brown",
+            phone: "0123456789",
+            productCode: "ZA101010",
+            productName: "listym shot term",
+            rate: 4.6,
+            createAt: formatDateTime(),
             content:
                 "1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letra",
             action: (
@@ -79,44 +120,11 @@ export const Evaluate = () => {
             key: "1",
             id: 1,
             username: "John Brown",
-            avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
+            phone: "0123456789",
             productCode: "ZA101010",
             productName: "listym shot term",
             rate: 4.6,
-            content:
-                "1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letra",
-            action: (
-                <div className="action-column">
-                    <Button type="primary">Sửa</Button>
-                    <Button onClick={() => setIsOpenModalRemoveCategory(true)}>Xóa</Button>
-                </div>
-            ),
-        },
-        {
-            key: "1",
-            id: 1,
-            username: "John Brown",
-            avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
-            productCode: "ZA101010",
-            productName: "listym shot term",
-            rate: 4.6,
-            content:
-                "1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letra",
-            action: (
-                <div className="action-column">
-                    <Button type="primary">Sửa</Button>
-                    <Button onClick={() => setIsOpenModalRemoveCategory(true)}>Xóa</Button>
-                </div>
-            ),
-        },
-        {
-            key: "1",
-            id: 1,
-            username: "John Brown",
-            avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
-            productCode: "ZA101010",
-            productName: "listym shot term",
-            rate: 4.6,
+            createAt: formatDateTime(),
             content:
                 "1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letra",
             action: (
@@ -154,7 +162,7 @@ export const Evaluate = () => {
                 </div>
             </div>
 
-            <Table columns={columns} dataSource={data} size="middle" bordered />
+            <Table columns={columns} dataSource={data} size="middle" bordered pagination={false} />
 
             <Modal
                 title="Xóa đánh giá"
