@@ -1,5 +1,5 @@
 import { IModal, IProductOptionObject, IProductOptionObjectError } from "@interfaces";
-import { Button, Col, Form, Input, Modal, Row, Upload } from "antd";
+import { Button, Col, Form, Input, Modal, Row, Upload, Select } from "antd";
 import { useFormik } from "formik";
 import { UploadOutlined, CloseOutlined } from "@ant-design/icons";
 import { RcFile } from "antd/lib/upload";
@@ -36,6 +36,7 @@ export const ProductOption = ({
     useEffect(() => {
         const validateField = async () => {
             const errors = await formik.validateForm();
+
             if (!Object.keys(errors).length) {
                 const productObjectClone = { ...productOptionObject };
                 productObjectClone[productOptionKey] = formik.values;
@@ -87,11 +88,11 @@ export const ProductOption = ({
                     <Upload
                         listType="picture"
                         beforeUpload={beforeUpload}
-                        onChange={(e) => formik.setFieldValue("image", e.fileList[0])}
-                        maxCount={1}
+                        onChange={(e) => formik.setFieldValue("image", e.fileList)}
                         style={{ width: "100%" }}
+                        multiple
                     >
-                        <Button icon={<UploadOutlined />}>Click Here</Button>
+                        <Button icon={<UploadOutlined />}>Click to Here</Button>
                     </Upload>
                 </Form.Item>
             </Col>
@@ -102,6 +103,7 @@ export const ProductOption = ({
                     name={`size-${productOptionKey}`}
                     help={formik.errors.size}
                     validateStatus={formik.errors.size ? "error" : "success"}
+                    initialValue={formik.values.size}
                 >
                     <Input onChange={(e) => formik.setFieldValue("size", e.target.value)} />
                 </Form.Item>
@@ -113,6 +115,7 @@ export const ProductOption = ({
                     name={`color-${productOptionKey}`}
                     help={formik.errors.color}
                     validateStatus={formik.errors.color ? "error" : "success"}
+                    initialValue={formik.values.color}
                 >
                     <Input onChange={(e) => formik.setFieldValue("color", e.target.value)} />
                 </Form.Item>
@@ -144,6 +147,9 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
 
     const [countSubmit, setCountSubmit] = useState(0);
 
+    const [sizeList, setSizeList] = useState<string[]>([]);
+    const [colorList, setColorList] = useState<string[]>([]);
+
     const addNewProductOption = () => {
         const code: string = randomString(8);
 
@@ -154,6 +160,7 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                 size: "",
                 color: "",
                 quantity: "",
+                code: "",
             },
         });
     };
@@ -168,6 +175,8 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
             name: "",
             price: "",
             description: "",
+            discount: "",
+            categoryId: "",
         },
         validationSchema: productSchema,
         onSubmit: (value) => {
@@ -180,6 +189,38 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
     const formItemLayout = {
         labelCol: { span: 6 },
         wrapperCol: { span: 18 },
+    };
+
+    const handleChangeSize = (value: string[]) => {
+        setSizeList(value);
+    };
+
+    const handleChangeColor = (value: string[]) => {
+        setColorList(value);
+    };
+
+    const generateProductOption = () => {
+        let productOptions: IProductOptionObject = {};
+        sizeList.forEach((size: string) => {
+            colorList.forEach((color: string) => {
+                const code: string = randomString(8);
+
+                productOptions = {
+                    ...productOptions,
+                    [code]: {
+                        image: "",
+                        size,
+                        color,
+                        quantity: 50,
+                        code: "",
+                    },
+                };
+            });
+        });
+
+        if (Object.keys(productOptions).length) {
+            setProductOptionObject(productOptions);
+        }
     };
 
     return (
@@ -215,12 +256,30 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                 </Form.Item>
 
                 <Form.Item
+                    label="Loại Sản Phẩm"
+                    name="categoryId"
+                    help={formik.errors.categoryId}
+                    validateStatus={formik.errors.categoryId ? "error" : "success"}
+                >
+                    <Input onChange={(e) => formik.setFieldValue("categoryId", e.target.value)} />
+                </Form.Item>
+
+                <Form.Item
                     label="Giá"
                     name="price"
                     help={formik.errors.price}
                     validateStatus={formik.errors.price ? "error" : "success"}
                 >
                     <Input onChange={(e) => formik.setFieldValue("price", e.target.value)} />
+                </Form.Item>
+
+                <Form.Item
+                    label="Giảm Giá (%)"
+                    name="discount"
+                    help={formik.errors.discount}
+                    validateStatus={formik.errors.discount ? "error" : "success"}
+                >
+                    <Input onChange={(e) => formik.setFieldValue("discount", e.target.value)} />
                 </Form.Item>
 
                 <Form.Item
@@ -234,6 +293,44 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                         rows={3}
                     />
                 </Form.Item>
+
+                <Row style={{ alignItems: "flex-end" }}>
+                    <Col md={18} style={{ flexGrow: 1 }}>
+                        <Form.Item
+                            label="Size"
+                            name="size"
+                            labelCol={{ md: 8 }}
+                            wrapperCol={{ md: 16 }}
+                        >
+                            <Select
+                                mode="tags"
+                                style={{ width: "100%" }}
+                                onChange={handleChangeSize}
+                            ></Select>
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Color"
+                            name="color"
+                            labelCol={{ md: 8 }}
+                            wrapperCol={{ md: 16 }}
+                        >
+                            <Select
+                                mode="tags"
+                                style={{ width: "100%" }}
+                                onChange={handleChangeColor}
+                            ></Select>
+                        </Form.Item>
+                    </Col>
+                    <Col>
+                        <ButtonAddStyle
+                            style={{ marginBottom: "24px", marginLeft: "20px" }}
+                            onClick={generateProductOption}
+                        >
+                            Generate
+                        </ButtonAddStyle>
+                    </Col>
+                </Row>
 
                 <h3>Option</h3>
 

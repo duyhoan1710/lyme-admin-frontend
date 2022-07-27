@@ -11,6 +11,7 @@ export interface IProductOption {
     size: string;
     color: string;
     quantity: number | "";
+    code: string | "";
 }
 
 export interface IProductOptionObject {

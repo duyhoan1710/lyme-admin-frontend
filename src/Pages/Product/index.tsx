@@ -1,9 +1,11 @@
-import { Button, Row, Col, Modal, Input } from "antd";
+import { Button, Row, Col, Modal, Input, Select } from "antd";
 import { useState } from "react";
 import { ButtonAddStyle } from "src/Components/Common/button";
 import styled from "styled-components";
 import { ModalCreateProduct } from "./create";
 import { ModalDetailProduct } from "./detail";
+
+const { Option } = Select;
 
 export const Product = () => {
     const [isOpenModalCreateProduct, setIsOpenModalCreateProduct] = useState(false);
@@ -16,10 +18,23 @@ export const Product = () => {
             <div className="filter">
                 <Row gutter={30} className="input-group">
                     <Col md={5}>
-                        <Input placeholder="Người mua hoặc SĐT" />
-                    </Col>
-                    <Col md={5}>
                         <Input placeholder="Mã SP hoặc tên SP" />
+                    </Col>
+
+                    <Col md={5}>
+                        <Select defaultValue={null} style={{ width: 200 }}>
+                            <Option value={null}>Tất Cả</Option>
+                            <Option value="1">Lượt View</Option>
+                            <Option value="2">Lượt Thanh Toán</Option>
+                        </Select>
+                    </Col>
+
+                    <Col md={5}>
+                        <Select defaultValue={null} style={{ width: 200 }}>
+                            <Option value={null}>Tất Cả</Option>
+                            <Option value="1">Mới Nhất</Option>
+                            <Option value="2">Cũ Nhất</Option>
+                        </Select>
                     </Col>
                 </Row>
 
@@ -35,39 +50,51 @@ export const Product = () => {
             </div>
 
             <Row className="custom-header">
-                <Col md={2} className="custom-col">
+                <Col md={1} className="custom-col">
                     Id
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     Mã SP
                 </Col>
-                <Col md={6} className="custom-col">
+                <Col md={5} className="custom-col">
                     Tên SP
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     Giá
                 </Col>
-                <Col md={7} className="custom-col">
+                <Col md={6} className="custom-col">
                     Mô tả
+                </Col>
+                <Col md={2} className="custom-col">
+                    Lượt View
+                </Col>
+                <Col md={3} className="custom-col">
+                    Lượt Thanh Toán
                 </Col>
                 <Col md={3} className="custom-col action-column"></Col>
             </Row>
             <Row className="custom-row" onClick={() => setIsOpenModalDetailProduct(true)}>
-                <Col md={2} className="custom-col">
+                <Col md={1} className="custom-col">
                     1
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     ZA10000
                 </Col>
-                <Col md={6} className="custom-col">
+                <Col md={5} className="custom-col">
                     Áo dài trung quốc chất lượng{" "}
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     1000000đ
                 </Col>
-                <Col md={7} className="custom-col three-dot">
+                <Col md={6} className="custom-col three-dot">
                     A dog is a type of domesticated animal. Known for its loyalty and faithfulness,
                     it can be found as a welcome guest in many households across the world
+                </Col>
+                <Col md={2} className="custom-col">
+                    374
+                </Col>
+                <Col md={3} className="custom-col">
+                    46
                 </Col>
                 <Col md={3} className="custom-col">
                     <div className="action-column">
@@ -84,21 +111,27 @@ export const Product = () => {
                 </Col>
             </Row>
             <Row className="custom-row" onClick={() => setIsOpenModalDetailProduct(true)}>
-                <Col md={2} className="custom-col">
+                <Col md={1} className="custom-col">
                     1
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     ZA10000
                 </Col>
-                <Col md={6} className="custom-col">
+                <Col md={5} className="custom-col">
                     Áo dài trung quốc chất lượng{" "}
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     1000000đ
                 </Col>
-                <Col md={7} className="custom-col three-dot">
+                <Col md={6} className="custom-col three-dot">
                     A dog is a type of domesticated animal. Known for its loyalty and faithfulness,
                     it can be found as a welcome guest in many households across the world
+                </Col>
+                <Col md={2} className="custom-col">
+                    374
+                </Col>
+                <Col md={3} className="custom-col">
+                    46
                 </Col>
                 <Col md={3} className="custom-col">
                     <div className="action-column">
@@ -116,21 +149,27 @@ export const Product = () => {
             </Row>
 
             <Row className="custom-row" onClick={() => setIsOpenModalDetailProduct(true)}>
-                <Col md={2} className="custom-col">
+                <Col md={1} className="custom-col">
                     1
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     ZA10000
                 </Col>
-                <Col md={6} className="custom-col">
+                <Col md={5} className="custom-col">
                     Áo dài trung quốc chất lượng{" "}
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     1000000đ
                 </Col>
-                <Col md={7} className="custom-col three-dot">
+                <Col md={6} className="custom-col three-dot">
                     A dog is a type of domesticated animal. Known for its loyalty and faithfulness,
                     it can be found as a welcome guest in many households across the world
+                </Col>
+                <Col md={2} className="custom-col">
+                    374
+                </Col>
+                <Col md={3} className="custom-col">
+                    46
                 </Col>
                 <Col md={3} className="custom-col">
                     <div className="action-column">
@@ -146,22 +185,67 @@ export const Product = () => {
                     </div>
                 </Col>
             </Row>
+
             <Row className="custom-row" onClick={() => setIsOpenModalDetailProduct(true)}>
-                <Col md={2} className="custom-col">
+                <Col md={1} className="custom-col">
                     1
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     ZA10000
                 </Col>
-                <Col md={6} className="custom-col">
+                <Col md={5} className="custom-col">
                     Áo dài trung quốc chất lượng{" "}
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     1000000đ
                 </Col>
-                <Col md={7} className="custom-col three-dot">
+                <Col md={6} className="custom-col three-dot">
                     A dog is a type of domesticated animal. Known for its loyalty and faithfulness,
                     it can be found as a welcome guest in many households across the world
+                </Col>
+                <Col md={2} className="custom-col">
+                    374
+                </Col>
+                <Col md={3} className="custom-col">
+                    46
+                </Col>
+                <Col md={3} className="custom-col">
+                    <div className="action-column">
+                        <Button type="primary">Sửa</Button>
+                        <Button
+                            onClick={(e) => {
+                                setRemoveProductId(1);
+                                e.stopPropagation();
+                            }}
+                        >
+                            Xóa
+                        </Button>
+                    </div>
+                </Col>
+            </Row>
+
+            <Row className="custom-row" onClick={() => setIsOpenModalDetailProduct(true)}>
+                <Col md={1} className="custom-col">
+                    1
+                </Col>
+                <Col md={2} className="custom-col">
+                    ZA10000
+                </Col>
+                <Col md={5} className="custom-col">
+                    Áo dài trung quốc chất lượng{" "}
+                </Col>
+                <Col md={2} className="custom-col">
+                    1000000đ
+                </Col>
+                <Col md={6} className="custom-col three-dot">
+                    A dog is a type of domesticated animal. Known for its loyalty and faithfulness,
+                    it can be found as a welcome guest in many households across the world
+                </Col>
+                <Col md={2} className="custom-col">
+                    374
+                </Col>
+                <Col md={3} className="custom-col">
+                    46
                 </Col>
                 <Col md={3} className="custom-col">
                     <div className="action-column">
