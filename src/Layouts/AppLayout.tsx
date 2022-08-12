@@ -73,7 +73,9 @@ export const AppLayout = (props: ILayout) => {
                     bottom: 0,
                 }}
             >
-                <div className="logo"><i>Lyme Admin</i></div>
+                <div className="logo">
+                    <i>Lyme Admin</i>
+                </div>
                 <Menu
                     theme="dark"
                     mode="inline"
@@ -84,6 +86,11 @@ export const AppLayout = (props: ILayout) => {
                             key: EAppRoutes.CATEGORY,
                             icon: <UserOutlined />,
                             label: "Loại Sản Phẩm",
+                        },
+                        {
+                            key: EAppRoutes.SALES,
+                            icon: <UserOutlined />,
+                            label: "Đợt Sale",
                         },
                         {
                             key: EAppRoutes.PRODUCT,
@@ -133,7 +140,7 @@ export const AppLayout = (props: ILayout) => {
                     style={{
                         margin: "24px 16px",
                         padding: 24,
-                        minHeight: 'calc(100vh - 112px)',
+                        minHeight: "calc(100vh - 112px)",
                     }}
                 >
                     {children}

@@ -56,3 +56,9 @@
   width: 300px;
   /* limit to 2 lines */
 }
+
+.paginate {
+  display: flex;
+  justify-content: end;
+  margin-top: 20px;
+}

@@ -1,20 +1,41 @@
-import { Button, Form, Input, Modal, Upload } from "antd";
+import { Button, Form, Image, Input, Modal, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useFormik } from "formik";
 import { IModal } from "src/Interfaces/component";
 import { RcFile } from "antd/lib/upload";
-// import { createSchema } from "./validation";
+import { createCategorySchema } from "./validation";
+import { updateCategory } from "src/services/category";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const ModalDetailProduct = ({ isModalVisible, handleCancel }: IModal) => {
+interface ICategory extends IModal {
+    data: {
+        id: number;
+        name: string;
+        image: string;
+    };
+}
+export const ModalUpdateCategory = ({ isModalVisible, handleCancel, data }: ICategory) => {
+    const queryClient = useQueryClient();
+
+    const { mutate: handleUpdateCategory } = useMutation(
+        async () => {
+            await updateCategory({ ...formik.values, id: data.id });
+        },
+        {
+            onSuccess: () => queryClient.invalidateQueries(["CATEGORIES"]),
+            onError: () => {
+                console.log("error");
+            },
+        }
+    );
+
     const formik = useFormik({
         initialValues: {
-            categoryName: "",
-            image: "",
+            name: data.name,
+            image: undefined,
         },
-        // validationSchema: createSchema,
-        onSubmit: (value) => {
-            console.log(value);
-        },
+        validationSchema: createCategorySchema,
+        onSubmit: () => handleUpdateCategory(),
     });
 
     const formItemLayout = {
@@ -35,21 +56,21 @@ export const ModalDetailProduct = ({ isModalVisible, handleCancel }: IModal) => 
 
     return (
         <Modal
-            title="Chi tiết sản phẩm"
+            title="Thêm mới loại sản phẩm"
             visible={isModalVisible}
             onOk={() => formik.handleSubmit()}
             onCancel={handleCancel}
             okText="Đồng ý"
             cancelText="Đóng"
         >
-            {/* <Form colon={false} labelAlign="left" {...formItemLayout}>
+            <Form colon={false} labelAlign="left" {...formItemLayout}>
                 <Form.Item
                     label="Loại sản phẩm"
-                    name="categoryName"
-                    help={formik.errors.categoryName}
-                    validateStatus={formik.errors.categoryName ? "error" : "success"}
+                    name="name"
+                    help={formik.errors.name}
+                    validateStatus={formik.errors.name ? "error" : "success"}
                 >
-                    <Input onChange={(e) => formik.setFieldValue("categoryName", e.target.value)} />
+                    <Input onChange={(e) => formik.setFieldValue("name", e.target.value)} />
                 </Form.Item>
 
                 <Form.Item
@@ -69,8 +90,10 @@ export const ModalDetailProduct = ({ isModalVisible, handleCancel }: IModal) => 
                     >
                         <Button icon={<UploadOutlined />}>Click to upload</Button>
                     </Upload>
+
+                    {!formik.values.image && data.image && <Image src={formik.values.image} />}
                 </Form.Item>
-            </Form> */}
+            </Form>
         </Modal>
     );
 };

@@ -9,7 +9,7 @@ export const ModalUpdateOrder = ({ isModalVisible, handleCancel }: IModal) => {
     const formik = useFormik({
         initialValues: {
             categoryName: "",
-            categoryImage: "",
+            image: "",
         },
         // validationSchema: createCategorySchema,
         onSubmit: (value) => {

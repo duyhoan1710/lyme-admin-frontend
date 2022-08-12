@@ -4,6 +4,7 @@ export interface IModal {
     handleOk?: () => void;
     title?: string;
     children?: JSX.Element | string;
+    data?: any;
 }
 
 export interface IProductOption {

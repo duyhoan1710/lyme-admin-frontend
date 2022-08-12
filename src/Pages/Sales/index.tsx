@@ -1,43 +1,37 @@
-import { Button, Table, Image, Modal, Pagination } from "antd";
+import { Button, Table, Modal, Pagination } from "antd";
 import React, { useEffect, useState } from "react";
 import type { ColumnsType } from "antd/es/table";
 import styled from "styled-components";
 import { ButtonAddStyle } from "src/Components/Common/button";
-import { ModalCreateCategory } from "./create";
-import { useCategory } from "src/hooks/useCategory";
+import { ModalCreateSale } from "./create";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCategory } from "src/services/category";
-import { useFormik } from "formik";
-import { ModalUpdateCategory } from "./update";
+import { useSales } from "src/hooks/useSales";
+import { ModalUpdateSale } from "./update";
+import { ISale } from "@interfaces";
 
-export const Category = () => {
+export const Sales = () => {
     const queryClient = useQueryClient();
 
     const [dataColumns, setDataColumns] = useState<DataType[]>();
-    const [isOpenModalCreateCategory, setIsOpenCreateCategory] = useState(false);
-    const [idRemoveCategory, setIdRemoveSale] = useState<number>();
-    const [idUpdateCategory, setIdUpdateCategory] = useState<number>();
+    const [isOpenModalCreateSale, setIsOpenCreateSale] = useState(false);
+    const [idUpdateSale, setIdUpdateSale] = useState<number>();
+    const [idDeleteSale, setIdDeleteSale] = useState<number>();
     const [page, setPage] = useState(1);
 
-    const { data, isLoading } = useCategory({ page });
+    const { data, isLoading } = useSales({ page });
 
-    const { mutate: handleDeleteCategory } = useMutation(
-        () => deleteCategory({ id: idRemoveCategory }),
-        {
-            onSuccess: async () => {
-                await queryClient.invalidateQueries(["CATEGORIES"]);
-            },
-            onError: () => {
-                console.log("error");
-            },
-        }
-    );
+    const { mutate: handleDeleteSale } = useMutation(() => deleteCategory({ id: idDeleteSale }), {
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(["SALES"]);
+        },
+        onError: () => {
+            console.log("error");
+        },
+    });
 
-    interface DataType {
+    interface DataType extends ISale {
         key: React.Key;
-        id: number;
-        name: string;
-        image: string;
         action: React.ReactElement;
     }
 
@@ -47,14 +41,20 @@ export const Category = () => {
             dataIndex: "id",
         },
         {
-            title: "Image",
-            dataIndex: "image",
-            width: "250px",
-            render: (value) => <Image src={value} width={80} height={50} preview={false} />,
-        },
-        {
             title: "Name",
             dataIndex: "name",
+        },
+        {
+            title: "Start Time",
+            dataIndex: "startTime",
+        },
+        {
+            title: "End Time",
+            dataIndex: "endTime",
+        },
+        {
+            title: "Description",
+            dataIndex: "description",
         },
         {
             title: "",
@@ -73,7 +73,7 @@ export const Category = () => {
                     action: (
                         <div className="action-column">
                             <Button type="primary">Sửa</Button>
-                            <Button onClick={() => setIdRemoveSale(el.id)}>Xóa</Button>
+                            <Button onClick={() => setIdDeleteSale(el.id)}>Xóa</Button>
                         </div>
                     ),
                 }))
@@ -82,14 +82,12 @@ export const Category = () => {
     }, [data]);
 
     return (
-        <StyledCategory>
+        <StyledSale>
             <div className="add-more-button">
-                <ButtonAddStyle onClick={() => setIsOpenCreateCategory(true)}>
-                    Thêm Mới
-                </ButtonAddStyle>
-                <ModalCreateCategory
-                    isModalVisible={isOpenModalCreateCategory}
-                    handleCancel={() => setIsOpenCreateCategory(false)}
+                <ButtonAddStyle onClick={() => setIsOpenCreateSale(true)}>Thêm Mới</ButtonAddStyle>
+                <ModalCreateSale
+                    isModalVisible={isOpenModalCreateSale}
+                    handleCancel={() => setIsOpenCreateSale(false)}
                 />
             </div>
 
@@ -110,29 +108,29 @@ export const Category = () => {
                 />
             </div>
 
-            {idUpdateCategory && (
-                <ModalUpdateCategory
-                    isModalVisible={!!idUpdateCategory}
-                    handleCancel={() => setIdUpdateCategory(undefined)}
-                    data={data?.result?.find((el) => el.id === idUpdateCategory)}
+            {idUpdateSale && (
+                <ModalUpdateSale
+                    isModalVisible={!!idUpdateSale}
+                    handleCancel={() => setIdDeleteSale(undefined)}
+                    data={data?.result?.find((el) => el.id === idUpdateSale)}
                 />
             )}
 
             <Modal
-                title="Xóa loại sản phẩm"
-                visible={!!idRemoveCategory}
-                onOk={() => handleDeleteCategory()}
-                onCancel={() => setIdRemoveSale(undefined)}
+                title="Xóa đợt Sale"
+                visible={!!idDeleteSale}
+                onOk={() => handleDeleteSale()}
+                onCancel={() => setIdDeleteSale(undefined)}
                 okText="Đồng ý"
                 cancelText="Đóng"
             >
                 Bạn có chắc chắn muốn xóa ?
             </Modal>
-        </StyledCategory>
+        </StyledSale>
     );
 };
 
-const StyledCategory = styled.div`
+const StyledSale = styled.div`
     .add-more-button {
         margin-bottom: 15px;
         display: flex;

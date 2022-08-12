@@ -20,10 +20,12 @@ export const ComponentAppRoute = (props: IRoute) => {
                 !!auth && !token ? (
                     <Redirect
                         to={{
-                            pathname: "/sign-in",
+                            pathname: "/login",
                             state: { from: props.location },
                         }}
                     />
+                ) : !auth ? (
+                    <Component />
                 ) : (
                     <Layout>
                         <Component />

@@ -4,17 +4,31 @@ import { useFormik } from "formik";
 import { IModal } from "src/Interfaces/component";
 import { RcFile } from "antd/lib/upload";
 import { createCategorySchema } from "./validation";
+import { createCategory } from "src/services/category";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const ModalCreateCategory = ({ isModalVisible, handleCancel }: IModal) => {
+    const queryClient = useQueryClient();
+
+    const { mutate: handleCreateCategory } = useMutation(
+        async () => {
+            await createCategory(formik.values);
+        },
+        {
+            onSuccess: () => queryClient.invalidateQueries(["CATEGORIES"]),
+            onError: () => {
+                console.log("error");
+            },
+        }
+    );
+
     const formik = useFormik({
         initialValues: {
-            categoryName: "",
-            categoryImage: "",
+            name: "",
+            image: undefined,
         },
         validationSchema: createCategorySchema,
-        onSubmit: (value) => {
-            console.log(value);
-        },
+        onSubmit: () => handleCreateCategory(),
     });
 
     const formItemLayout = {
@@ -45,26 +59,26 @@ export const ModalCreateCategory = ({ isModalVisible, handleCancel }: IModal) =>
             <Form colon={false} labelAlign="left" {...formItemLayout}>
                 <Form.Item
                     label="Loại sản phẩm"
-                    name="categoryName"
-                    help={formik.errors.categoryName}
-                    validateStatus={formik.errors.categoryName ? "error" : "success"}
+                    name="name"
+                    help={formik.errors.name}
+                    validateStatus={formik.errors.name ? "error" : "success"}
                 >
-                    <Input onChange={(e) => formik.setFieldValue("categoryName", e.target.value)} />
+                    <Input onChange={(e) => formik.setFieldValue("name", e.target.value)} />
                 </Form.Item>
 
                 <Form.Item
-                    name="categoryImage"
+                    name="image"
                     label="Ảnh"
                     valuePropName="fileList"
                     getValueFromEvent={normFile}
-                    help={formik.errors.categoryImage}
-                    validateStatus={formik.errors.categoryImage ? "error" : "success"}
+                    help={formik.errors.image}
+                    validateStatus={formik.errors.image ? "error" : "success"}
                 >
                     <Upload
                         name="logo"
                         listType="picture"
                         beforeUpload={beforeUpload}
-                        onChange={(e) => formik.setFieldValue("categoryImage", e.fileList[0])}
+                        onChange={(e) => formik.setFieldValue("image", e.fileList[0])}
                         maxCount={1}
                     >
                         <Button icon={<UploadOutlined />}>Click to upload</Button>

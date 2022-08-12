@@ -9,7 +9,7 @@ export const ModalCreateEvaluate = ({ isModalVisible, handleCancel }: IModal) =>
     const formik = useFormik({
         initialValues: {
             categoryName: "",
-            categoryImage: "",
+            image: "",
         },
         validationSchema: createEvaluationSchema,
         onSubmit: (value) => {
@@ -53,18 +53,18 @@ export const ModalCreateEvaluate = ({ isModalVisible, handleCancel }: IModal) =>
                 </Form.Item>
 
                 <Form.Item
-                    name="categoryImage"
+                    name="image"
                     label="Ảnh"
                     valuePropName="fileList"
                     getValueFromEvent={normFile}
-                    help={formik.errors.categoryImage}
-                    validateStatus={formik.errors.categoryImage ? "error" : "success"}
+                    help={formik.errors.image}
+                    validateStatus={formik.errors.image ? "error" : "success"}
                 >
                     <Upload
                         name="logo"
                         listType="picture"
                         beforeUpload={beforeUpload}
-                        onChange={(e) => formik.setFieldValue("categoryImage", e.fileList[0])}
+                        onChange={(e) => formik.setFieldValue("image", e.fileList[0])}
                         maxCount={1}
                     >
                         <Button icon={<UploadOutlined />}>Click to upload</Button>

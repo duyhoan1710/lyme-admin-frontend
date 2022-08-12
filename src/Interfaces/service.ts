@@ -3,21 +3,61 @@ export interface IPaginate {
     perPage?: number;
 }
 
+export interface IResponse {
+    data: {
+        message: string;
+        result: any[];
+        paging: {
+            page: string;
+            perPage: string;
+            total: number;
+        };
+    };
+    isLoading: boolean;
+    error: any;
+}
+
+// CATEGORY
 export interface IGetCategory extends IPaginate {
-    categoryName?: string;
+    name?: string;
 }
 
 export interface IPostCategory {
-    categoryName: string;
-    categoryImage: File;
+    name: string;
+    image?: File;
 }
 
 export interface IPutCategory {
     id: number;
-    categoryName: string;
-    categoryImage: File;
+    name: string;
+    image?: File;
 }
 
 export interface IDeleteCategory {
+    id?: number;
+}
+
+// SALES
+
+export interface IGetSales extends IPaginate {
+    name?: string;
+}
+
+export interface IPostSale {
+    name: string;
+    startTime: string;
+    endTime: string;
+    description: string;
+}
+
+export interface IPutSale extends IPostSale {
+    id: number;
+}
+
+export interface IDeleteSale {
+    id?: number;
+}
+
+export interface ISale extends IPostSale {
     id: number;
 }
