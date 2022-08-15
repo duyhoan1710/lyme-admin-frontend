@@ -6,49 +6,11 @@ import type { MenuProps } from "antd";
 
 import { ILayout } from "@interfaces";
 import { LayoutStyle } from "./styles";
-import { useState } from "react";
 import { EAppRoutes } from "@enums";
 import { useHistory, useLocation } from "react-router-dom";
+import { setToken } from "@utils";
 
 const { Header, Sider, Content } = Layout;
-
-const items: MenuProps["items"] = [
-    {
-        label: "Navigation One",
-        key: "mail",
-        icon: <MailOutlined />,
-    },
-    {
-        label: "Navigation Two",
-        key: "app",
-        icon: <AppstoreOutlined />,
-    },
-    {
-        label: "Navigation Three",
-        key: "SubMenu",
-        icon: <SettingOutlined />,
-    },
-];
-
-const dropdownProfile = (
-    <Menu
-        items={[
-            {
-                key: "1",
-                label: "Profile",
-            },
-            {
-                key: "3",
-                label: "Setting",
-            },
-            {
-                key: "4",
-                danger: true,
-                label: "Logout",
-            },
-        ]}
-    />
-);
 
 export const AppLayout = (props: ILayout) => {
     const { children } = props;
@@ -58,6 +20,32 @@ export const AppLayout = (props: ILayout) => {
     const onClick: MenuProps["onClick"] = (e) => {
         history.push(e.key);
     };
+
+    const logout = () => {
+        setToken("");
+        history.push("/login");
+    };
+
+    const dropdownProfile = (
+        <Menu
+            items={[
+                {
+                    key: "1",
+                    label: "Profile",
+                },
+                {
+                    key: "3",
+                    label: "Setting",
+                },
+                {
+                    key: "4",
+                    danger: true,
+                    label: "Logout",
+                    onClick: logout,
+                },
+            ]}
+        />
+    );
 
     return (
         <LayoutStyle>
@@ -116,7 +104,7 @@ export const AppLayout = (props: ILayout) => {
                     style={{ padding: "0 16px", display: "flex", justifyContent: "flex-end" }}
                 >
                     <div>
-                        <span>Xin Chào Nguyễn Duy Hoàn</span>
+                        <span>Xin Chào Admin</span>
                         <Dropdown overlay={dropdownProfile} placement="bottom" arrow>
                             <a onClick={(e) => e.preventDefault()}>
                                 <Avatar
@@ -128,7 +116,7 @@ export const AppLayout = (props: ILayout) => {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    HN
+                                    AD
                                 </Avatar>
                             </a>
                         </Dropdown>

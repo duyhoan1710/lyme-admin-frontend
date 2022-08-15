@@ -1,20 +1,32 @@
 import { useMutation } from "@tanstack/react-query";
+import { setToken } from "@utils";
 import { Form, Input, Image, Button } from "antd";
 import { useFormik } from "formik";
+import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
 import axiosClient from "src/Api/axiosClient";
 import styled from "styled-components";
 import { loginSchema } from "./validation";
 
 export const Login = () => {
+    const history = useHistory();
+
     const { mutate: handleLogin } = useMutation(
         async () => {
             const res = await axiosClient.post("/auth/login", {
                 ...formik.values,
             });
+
+            if (res.status === 200) {
+                setToken(res.data?.result?.accessToken);
+                toast.success("Đăng nhập thành công");
+                history.push("/categories");
+            }
         },
         {
-            // onSuccess: () => {},
-            // onError: () => {},
+            onError: () => {
+                toast.error("Đăng nhập thất bại");
+            },
         }
     );
 
@@ -27,8 +39,6 @@ export const Login = () => {
         onSubmit: () => handleLogin(),
     });
 
-    console.log(formik.values);
-
     return (
         <StyledAuth>
             <div className="form-login">
@@ -36,35 +46,41 @@ export const Login = () => {
 
                 <Form layout="horizontal" colon={false} labelAlign="left" autoComplete="off">
                     <Form.Item
-                        name="name"
+                        name="username"
                         help={formik.errors.username}
                         validateStatus={formik.errors.username ? "error" : "success"}
                     >
-                        <label className="label">Username</label>
-                        <Input
-                            type="text"
-                            autoComplete="off"
-                            className="input"
-                            onChange={(e) => formik.setFieldValue("username", e.target.value)}
-                        />
+                        <>
+                            <label className="label">Username</label>
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                className="input"
+                                onChange={(e) => formik.setFieldValue("username", e.target.value)}
+                            />
+                        </>
                     </Form.Item>
 
                     <Form.Item
-                        name="pass"
+                        name="password"
                         help={formik.errors.password}
                         validateStatus={formik.errors.password ? "error" : "success"}
                     >
-                        <label className="label">Password</label>
-                        <Input
-                            autoComplete="off"
-                            type="password"
-                            className="input"
-                            onChange={(e) => formik.setFieldValue("password", e.target.value)}
-                        />
+                        <>
+                            <label className="label">Password</label>
+                            <Input
+                                autoComplete="off"
+                                type="password"
+                                className="input"
+                                onChange={(e) => formik.setFieldValue("password", e.target.value)}
+                            />
+                        </>
                     </Form.Item>
 
                     <div className="btn-submit">
-                        <Button className="button" onClick={() => formik.handleSubmit()}>Submit</Button>
+                        <Button className="button" onClick={() => formik.handleSubmit()}>
+                            Submit
+                        </Button>
                     </div>
                 </Form>
             </div>
