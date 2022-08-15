@@ -22,7 +22,10 @@ export const ModalUpdateCategory = ({ isModalVisible, handleCancel, data }: ICat
             await updateCategory({ ...formik.values, id: data.id });
         },
         {
-            onSuccess: () => queryClient.invalidateQueries(["CATEGORIES"]),
+            onSuccess: async () => {
+                await queryClient.invalidateQueries(["CATEGORIES"]);
+                handleCancel();
+            },
             onError: () => {
                 console.log("error");
             },
@@ -56,7 +59,7 @@ export const ModalUpdateCategory = ({ isModalVisible, handleCancel, data }: ICat
 
     return (
         <Modal
-            title="Thêm mới loại sản phẩm"
+            title="Sửa loại sản phẩm"
             visible={isModalVisible}
             onOk={() => formik.handleSubmit()}
             onCancel={handleCancel}
@@ -69,6 +72,7 @@ export const ModalUpdateCategory = ({ isModalVisible, handleCancel, data }: ICat
                     name="name"
                     help={formik.errors.name}
                     validateStatus={formik.errors.name ? "error" : "success"}
+                    initialValue={formik.values.name}
                 >
                     <Input onChange={(e) => formik.setFieldValue("name", e.target.value)} />
                 </Form.Item>

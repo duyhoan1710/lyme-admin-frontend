@@ -24,8 +24,6 @@ export const ComponentAppRoute = (props: IRoute) => {
                             state: { from: props.location },
                         }}
                     />
-                ) : !auth ? (
-                    <Component />
                 ) : (
                     <Layout>
                         <Component />

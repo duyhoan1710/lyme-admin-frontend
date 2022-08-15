@@ -15,7 +15,10 @@ export const ModalCreateSale = ({ isModalVisible, handleCancel }: IModal) => {
             await createSale(formik.values);
         },
         {
-            onSuccess: () => queryClient.invalidateQueries(["SALES"]),
+            onSuccess: async () => {
+                await queryClient.invalidateQueries(["SALES"]);
+                handleCancel();
+            },
             onError: () => {
                 console.log("error");
             },

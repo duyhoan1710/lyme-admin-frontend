@@ -15,7 +15,10 @@ export const ModalCreateCategory = ({ isModalVisible, handleCancel }: IModal) =>
             await createCategory(formik.values);
         },
         {
-            onSuccess: () => queryClient.invalidateQueries(["CATEGORIES"]),
+            onSuccess: async () => {
+                await queryClient.invalidateQueries(["CATEGORIES"]);
+                handleCancel();
+            },
             onError: () => {
                 console.log("error");
             },

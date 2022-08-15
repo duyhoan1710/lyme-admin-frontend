@@ -7,7 +7,6 @@ import { ModalCreateCategory } from "./create";
 import { useCategory } from "src/hooks/useCategory";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCategory } from "src/services/category";
-import { useFormik } from "formik";
 import { ModalUpdateCategory } from "./update";
 
 export const Category = () => {
@@ -15,7 +14,7 @@ export const Category = () => {
 
     const [dataColumns, setDataColumns] = useState<DataType[]>();
     const [isOpenModalCreateCategory, setIsOpenCreateCategory] = useState(false);
-    const [idRemoveCategory, setIdRemoveSale] = useState<number>();
+    const [idRemoveCategory, setIdRemoveCategory] = useState<number>();
     const [idUpdateCategory, setIdUpdateCategory] = useState<number>();
     const [page, setPage] = useState(1);
 
@@ -26,6 +25,7 @@ export const Category = () => {
         {
             onSuccess: async () => {
                 await queryClient.invalidateQueries(["CATEGORIES"]);
+                setIdRemoveCategory(undefined);
             },
             onError: () => {
                 console.log("error");
@@ -44,7 +44,7 @@ export const Category = () => {
     const columns: ColumnsType<DataType> = [
         {
             title: "Id",
-            dataIndex: "id",
+            dataIndex: "key",
         },
         {
             title: "Image",
@@ -67,13 +67,13 @@ export const Category = () => {
         if (data) {
             const result = [...data.result];
             setDataColumns(
-                result.map((el) => ({
+                result.map((el, index) => ({
                     ...el,
-                    key: el.id,
+                    key: index + 1,
                     action: (
                         <div className="action-column">
-                            <Button type="primary">Sửa</Button>
-                            <Button onClick={() => setIdRemoveSale(el.id)}>Xóa</Button>
+                            <Button type="primary" onClick={() => setIdUpdateCategory(el.id)}>Sửa</Button>
+                            <Button onClick={() => setIdRemoveCategory(el.id)}>Xóa</Button>
                         </div>
                     ),
                 }))
@@ -122,7 +122,7 @@ export const Category = () => {
                 title="Xóa loại sản phẩm"
                 visible={!!idRemoveCategory}
                 onOk={() => handleDeleteCategory()}
-                onCancel={() => setIdRemoveSale(undefined)}
+                onCancel={() => setIdRemoveCategory(undefined)}
                 okText="Đồng ý"
                 cancelText="Đóng"
             >

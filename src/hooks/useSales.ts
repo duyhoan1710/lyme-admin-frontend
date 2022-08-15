@@ -6,7 +6,7 @@ export const useSales = (params: IGetSales): IResponse => {
     const { data, isLoading, error } = useQuery(["SALES", params], async () => {
         const res = await getSales(params);
 
-        return res.data;
+        return res;
     });
 
     return { data, isLoading, error };

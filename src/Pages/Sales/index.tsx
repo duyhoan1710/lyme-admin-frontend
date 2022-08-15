@@ -5,10 +5,11 @@ import styled from "styled-components";
 import { ButtonAddStyle } from "src/Components/Common/button";
 import { ModalCreateSale } from "./create";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteCategory } from "src/services/category";
 import { useSales } from "src/hooks/useSales";
 import { ModalUpdateSale } from "./update";
 import { ISale } from "@interfaces";
+import { deleteSale } from "src/services/sales";
+import { formatDate } from "src/Utils/dateTime";
 
 export const Sales = () => {
     const queryClient = useQueryClient();
@@ -21,9 +22,10 @@ export const Sales = () => {
 
     const { data, isLoading } = useSales({ page });
 
-    const { mutate: handleDeleteSale } = useMutation(() => deleteCategory({ id: idDeleteSale }), {
+    const { mutate: handleDeleteSale } = useMutation(() => deleteSale({ id: idDeleteSale }), {
         onSuccess: async () => {
             await queryClient.invalidateQueries(["SALES"]);
+            setIdDeleteSale(undefined);
         },
         onError: () => {
             console.log("error");
@@ -38,7 +40,7 @@ export const Sales = () => {
     const columns: ColumnsType<DataType> = [
         {
             title: "Id",
-            dataIndex: "id",
+            dataIndex: "key",
         },
         {
             title: "Name",
@@ -47,10 +49,12 @@ export const Sales = () => {
         {
             title: "Start Time",
             dataIndex: "startTime",
+            render: (value) => formatDate(value),
         },
         {
             title: "End Time",
             dataIndex: "endTime",
+            render: (value) => formatDate(value),
         },
         {
             title: "Description",
@@ -67,12 +71,12 @@ export const Sales = () => {
         if (data) {
             const result = [...data.result];
             setDataColumns(
-                result.map((el) => ({
+                result.map((el, index) => ({
                     ...el,
-                    key: el.id,
+                    key: index + 1,
                     action: (
                         <div className="action-column">
-                            <Button type="primary">Sửa</Button>
+                            <Button type="primary" onClick={() => setIdUpdateSale(el.id)}>Sửa</Button>
                             <Button onClick={() => setIdDeleteSale(el.id)}>Xóa</Button>
                         </div>
                     ),
@@ -111,7 +115,7 @@ export const Sales = () => {
             {idUpdateSale && (
                 <ModalUpdateSale
                     isModalVisible={!!idUpdateSale}
-                    handleCancel={() => setIdDeleteSale(undefined)}
+                    handleCancel={() => setIdUpdateSale(undefined)}
                     data={data?.result?.find((el) => el.id === idUpdateSale)}
                 />
             )}

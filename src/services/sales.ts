@@ -14,7 +14,7 @@ export const createSale = async (params: IPostSale) => {
 };
 
 export const updateSale = async (params: IPutSale) => {
-    const res = await axiosClient.post(`/sales/${params.id}`, params);
+    const res = await axiosClient.put(`/sales/${params.id}`, params);
 
     return res.data;
 };

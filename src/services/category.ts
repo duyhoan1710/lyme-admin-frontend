@@ -13,27 +13,27 @@ export const getCategory = async (params: IGetCategory) => {
 };
 
 export const createCategory = async (params: IPostCategory) => {
-    const formData = new FormData();
+    // const formData = new FormData();
 
-    formData.append("name", params.name);
-    if (params.image) {
-        formData.append("image", params.image);
-    }
+    // formData.append("name", params.name);
+    // if (params.image) {
+    //     formData.append("image", params.image);
+    // }
 
-    const res = await axiosClient.post("/categories", formData);
+    const res = await axiosClient.post("/categories", params);
 
     return res.data;
 };
 
 export const updateCategory = async (params: IPutCategory) => {
-    const formData = new FormData();
+    // const formData = new FormData();
 
-    formData.append("categoryName", params.name);
-    if (params.image) {
-        formData.append("image", params.image);
-    }
+    // formData.append("categoryName", params.name);
+    // if (params.image) {
+    //     formData.append("image", params.image);
+    // }
 
-    const res = await axiosClient.post(`/categories/${params.id}`, formData);
+    const res = await axiosClient.put(`/categories/${params.id}`, params);
 
     return res.data;
 };

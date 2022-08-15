@@ -2,12 +2,12 @@ import { DatePicker, Form, Input, Modal } from "antd";
 import { useFormik } from "formik";
 import { IModal } from "src/Interfaces/component";
 import { saleSchema } from "./validation";
-import { updateCategory } from "src/services/category";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ISale } from "@interfaces";
 import TextArea from "antd/lib/input/TextArea";
 import { formatDate } from "src/Utils/dateTime";
-
+import moment from 'moment';
+import { updateSale } from "src/services/sales";
 interface IModalSale extends IModal {
     data: ISale;
 }
@@ -17,7 +17,8 @@ export const ModalUpdateSale = ({ isModalVisible, handleCancel, data }: IModalSa
 
     const { mutate: handleUpdateCategory } = useMutation(
         async () => {
-            await updateCategory({ ...formik.values, id: data.id });
+            await updateSale({ ...formik.values, id: data.id });
+            handleCancel();
         },
         {
             onSuccess: () => queryClient.invalidateQueries(["SALES"]),
@@ -29,8 +30,11 @@ export const ModalUpdateSale = ({ isModalVisible, handleCancel, data }: IModalSa
 
     const formik = useFormik({
         initialValues: {
-            ...data,
-            image: undefined,
+            id: data.id,
+            name: data.name,
+            startTime: data.startTime,
+            endTime: data.endTime,
+            description: data.description,
         },
         validationSchema: saleSchema,
         onSubmit: () => handleUpdateCategory(),
@@ -49,6 +53,7 @@ export const ModalUpdateSale = ({ isModalVisible, handleCancel, data }: IModalSa
             onCancel={handleCancel}
             okText="Đồng ý"
             cancelText="Đóng"
+            width={720}
         >
             <Form colon={false} labelAlign="left" {...formItemLayout}>
                 <Form.Item
@@ -56,6 +61,7 @@ export const ModalUpdateSale = ({ isModalVisible, handleCancel, data }: IModalSa
                     name="name"
                     help={formik.errors.name}
                     validateStatus={formik.errors.name ? "error" : "success"}
+                    initialValue={formik.values.name}
                 >
                     <Input onChange={(e) => formik.setFieldValue("name", e.target.value)} />
                 </Form.Item>
@@ -65,6 +71,7 @@ export const ModalUpdateSale = ({ isModalVisible, handleCancel, data }: IModalSa
                     name="startTime"
                     help={formik.errors.startTime}
                     validateStatus={formik.errors.startTime ? "error" : "success"}
+                    initialValue={moment(formik.values.startTime)}
                 >
                     <DatePicker
                         clearIcon={false}
@@ -78,6 +85,7 @@ export const ModalUpdateSale = ({ isModalVisible, handleCancel, data }: IModalSa
                     name="endTime"
                     help={formik.errors.endTime}
                     validateStatus={formik.errors.endTime ? "error" : "success"}
+                    initialValue={moment(formik.values.endTime)}
                 >
                     <DatePicker
                         clearIcon={false}
@@ -91,6 +99,7 @@ export const ModalUpdateSale = ({ isModalVisible, handleCancel, data }: IModalSa
                     name="description"
                     help={formik.errors.description}
                     validateStatus={formik.errors.description ? "error" : "success"}
+                    initialValue={formik.values.description}
                 >
                     <TextArea
                         rows={5}
