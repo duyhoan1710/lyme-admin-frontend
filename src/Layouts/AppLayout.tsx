@@ -1,5 +1,4 @@
 import { UploadOutlined, UserOutlined, VideoCameraOutlined } from "@ant-design/icons";
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown, Layout, Menu } from "antd";
 
 import type { MenuProps } from "antd";

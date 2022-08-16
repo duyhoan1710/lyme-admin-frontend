@@ -11,6 +11,6 @@ export function randomString(length = 6) {
     return result;
 }
 
-export function formatVND(value: number | string) {
-    return value.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+export function formatVND(value: number | string | undefined) {
+    return Number(value).toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
 }

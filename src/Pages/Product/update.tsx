@@ -1,6 +1,7 @@
 import {
     ICategory,
     IModal,
+    IProduct,
     IProductOptionObject,
     IProductOptionObjectError,
     ISale,
@@ -153,7 +154,11 @@ export const ProductOption = ({
     );
 };
 
-export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => {
+export interface IUpdateProduct extends IModal {
+    data: IProduct;
+}
+
+export const ModalUpdateProduct = ({ isModalVisible, handleCancel, data }: IUpdateProduct) => {
     const queryClient = useQueryClient();
 
     const { data: categories } = useCategory({});
@@ -183,7 +188,19 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
     };
 
     useEffect(() => {
-        addNewProductOption();
+        const newProductOptionObject: IProductOptionObject = {};
+        data.subProducts.forEach((subProduct) => {
+            const code: string = randomString(8);
+
+            newProductOptionObject[code] = {
+                images: undefined,
+                size: subProduct.size,
+                color: subProduct.color,
+                quantity: subProduct.quantity,
+            };
+        });
+
+        setProductOptionObject(newProductOptionObject);
     }, []);
 
     const { mutate: handleCreateProduct } = useMutation(
@@ -206,14 +223,14 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
 
     const formik = useFormik({
         initialValues: {
-            code: "",
-            name: "",
-            price: undefined,
-            description: "",
-            categoryId: "",
-            saleId: "",
-            saleType: ESaleType.CENT,
-            saleValue: undefined,
+            code: data.code,
+            name: data.name,
+            price: data.price,
+            description: data.description,
+            categoryId: data.categoryId,
+            saleId: data.saleId,
+            saleType: data.saleType,
+            saleValue: data.saleValue,
         },
         validationSchema: productSchema,
         onSubmit: (value) => {
@@ -261,7 +278,7 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
 
     return (
         <Modal
-            title="Thêm mới sản phẩm"
+            title="Chỉnh sửa sản phẩm"
             visible={isModalVisible}
             onOk={() => {
                 setCountSubmit((preValue) => preValue + 1);
@@ -278,6 +295,7 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                     name="code"
                     help={formik.errors.code}
                     validateStatus={formik.errors.code ? "error" : "success"}
+                    initialValue={formik.values.code}
                 >
                     <Input onChange={(e) => formik.setFieldValue("code", e.target.value)} />
                 </Form.Item>
@@ -287,6 +305,7 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                     name="name"
                     help={formik.errors.name}
                     validateStatus={formik.errors.name ? "error" : "success"}
+                    initialValue={formik.values.name}
                 >
                     <Input onChange={(e) => formik.setFieldValue("name", e.target.value)} />
                 </Form.Item>
@@ -297,7 +316,10 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                     help={formik.errors.categoryId}
                     validateStatus={formik.errors.categoryId ? "error" : "success"}
                 >
-                    <Select onChange={(value) => formik.setFieldValue("categoryId", value)}>
+                    <Select
+                        defaultValue={formik.values.categoryId}
+                        onChange={(value) => formik.setFieldValue("categoryId", value)}
+                    >
                         {categories?.result?.map((category: ICategory) => (
                             <Option key={category.id} value={category.id}>
                                 {category.name}
@@ -311,6 +333,7 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                     name="price"
                     help={formik.errors.price}
                     validateStatus={formik.errors.price ? "error" : "success"}
+                    initialValue={formik.values.price}
                 >
                     <Input onChange={(e) => formik.setFieldValue("price", e.target.value)} />
                 </Form.Item>
@@ -321,7 +344,10 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                     help={formik.errors.saleId}
                     validateStatus={formik.errors.saleId ? "error" : "success"}
                 >
-                    <Select onChange={(value) => formik.setFieldValue("saleId", value)}>
+                    <Select
+                        defaultValue={formik.values.saleId}
+                        onChange={(value) => formik.setFieldValue("saleId", value)}
+                    >
                         {sales?.result?.map((sale: ISale) => (
                             <Option key={sale.id} value={sale.id}>
                                 {sale.name}
@@ -335,12 +361,13 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                     name="saleValue"
                     help={formik.errors.saleValue}
                     validateStatus={formik.errors.saleValue ? "error" : "success"}
+                    initialValue={formik.values.saleValue}
                 >
                     <Input
                         onChange={(e) => formik.setFieldValue("saleValue", e.target.value)}
                         addonAfter={
                             <Select
-                                defaultValue={ESaleType.CENT}
+                                defaultValue={formik.values.saleType || ESaleType.CENT}
                                 className="select-after"
                                 onChange={(value) => formik.setFieldValue("saleType", value)}
                             >
@@ -356,6 +383,7 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                     name="description"
                     help={formik.errors.description}
                     validateStatus={formik.errors.description ? "error" : "success"}
+                    initialValue={formik.values.description}
                 >
                     <TextArea
                         onChange={(e) => formik.setFieldValue("description", e.target.value)}

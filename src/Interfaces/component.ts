@@ -1,3 +1,5 @@
+import { ISubProduct } from "./service";
+
 export interface IModal {
     isModalVisible: boolean;
     handleCancel: () => void;
@@ -7,16 +9,8 @@ export interface IModal {
     data?: any;
 }
 
-export interface IProductOption {
-    image: File | "";
-    size: string;
-    color: string;
-    quantity: number | "";
-    code: string | "";
-}
-
 export interface IProductOptionObject {
-    [x: string]: IProductOption;
+    [x: string]: ISubProduct;
 }
 
 export interface IProductOptionObjectError {

@@ -1,44 +1,124 @@
+import { ESaleType } from "@enums";
+import { ICategory, IProduct, ISale } from "@interfaces";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatVND } from "@utils";
-import { Button, Row, Col, Modal, Input, Select } from "antd";
+import { Button, Row, Col, Modal, Input, Select, Form } from "antd";
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { ButtonAddStyle } from "src/Components/Common/button";
+import { useCategory } from "src/hooks/useCategory";
+import { useProducts } from "src/hooks/useProducts";
+import { useSales } from "src/hooks/useSales";
+import { deleteProduct } from "src/services/products";
 import styled from "styled-components";
 import { ModalCreateProduct } from "./create";
-import { ModalDetailProduct } from "./detail";
+import { ModalUpdateProduct } from "./update";
+import debounce from "lodash.debounce";
 
 const { Option } = Select;
 
 export const Product = () => {
+    const queryClient = useQueryClient();
+
+    const [searchCode, setSearchCode] = useState();
+    const [searchCategoryId, setSearchCategoryId] = useState();
+    const [orderBy, setOrderBy] = useState("");
+    const [orderType, setOrderType] = useState("");
+
+    const { data: products } = useProducts({
+        filter: { code: searchCode || undefined, categoryId: searchCategoryId || undefined },
+        order: orderBy && orderType ? { [orderBy]: orderType } : undefined,
+    });
+    const { data: categories } = useCategory({});
+    const { data: sales } = useSales({});
+
     const [isOpenModalCreateProduct, setIsOpenModalCreateProduct] = useState(false);
-    const [isOpenModalDetailProduct, setIsOpenModalDetailProduct] = useState(false);
     const [removeProductId, setRemoveProductId] = useState<number>();
-    const [selectedProductId, setSelectedProductId] = useState<number>();
+    const [updateProductId, setUpdateProductId] = useState<number>();
+
+    // const [searchSaleId, setSearchSaleId] = useState();
+
+    const { mutate: handleRemoveProduct } = useMutation(
+        async () => {
+            await deleteProduct({ id: removeProductId });
+        },
+        {
+            onSuccess: async () => {
+                await queryClient.invalidateQueries(["PRODUCTS"]);
+                setRemoveProductId(undefined);
+            },
+            onError: (res: any) => {
+                toast.error(res.response?.data?.message || res.message);
+            },
+        }
+    );
+
+    const searchByCode = debounce((value) => {
+        setSearchCode(value);
+    }, 300);
 
     return (
         <StyledProduct>
             <div className="filter">
-                <Row gutter={30} className="input-group">
-                    <Col md={5}>
-                        <Input placeholder="Mã SP hoặc tên SP" />
+                <Row gutter={20} className="input-group">
+                    <Col md={4}>
+                        <Input
+                            placeholder="Mã sản phẩm"
+                            onChange={(e) => searchByCode(e.target.value)}
+                        />
                     </Col>
 
-                    <Col md={5}>
-                        <Input placeholder="Loại SP" />
-                    </Col>
-
-                    <Col md={5}>
-                        <Select defaultValue="1" style={{ width: 200 }}>
+                    <Col md={4}>
+                        <Select
+                            style={{ width: "100%" }}
+                            onChange={(value) => setSearchCategoryId(value)}
+                            placeholder="Loại sản phẩm"
+                        >
                             <Option value={null}>Tất Cả</Option>
-                            <Option value="1">Lượt View</Option>
-                            <Option value="2">Lượt Thanh Toán</Option>
+                            {categories?.result?.map((category: ICategory) => (
+                                <Option key={category.id} value={category.id}>
+                                    {category.name}
+                                </Option>
+                            ))}
                         </Select>
                     </Col>
 
-                    <Col md={5}>
-                        <Select defaultValue="1" style={{ width: 200 }}>
+                    <Col md={4}>
+                        <Select
+                            style={{ width: "100%" }}
+                            onChange={(value) => console.log(value)}
+                            placeholder="Đợt sale"
+                        >
                             <Option value={null}>Tất Cả</Option>
-                            <Option value="1">Mới Nhất</Option>
-                            <Option value="2">Cũ Nhất</Option>
+                            {sales?.result?.map((sales: ISale) => (
+                                <Option key={sales.id} value={sales.id}>
+                                    {sales.name}
+                                </Option>
+                            ))}
+                        </Select>
+                    </Col>
+
+                    <Col md={4}>
+                        <Select
+                            style={{ width: "100%" }}
+                            placeholder="Thống kê"
+                            onChange={(value) => setOrderBy(value)}
+                        >
+                            <Option value={undefined}>Tất Cả</Option>
+                            <Option value="countViewers">Lượt View</Option>
+                            <Option value="countBuyers">Lượt Thanh Toán</Option>
+                        </Select>
+                    </Col>
+
+                    <Col md={4}>
+                        <Select
+                            style={{ width: "100%" }}
+                            placeholder="Sắp xếp"
+                            onChange={(value) => setOrderType(value)}
+                        >
+                            <Option value={undefined}>Tất Cả</Option>
+                            <Option value="DESC">Mới Nhất</Option>
+                            <Option value="ASC">Cũ Nhất</Option>
                         </Select>
                     </Col>
                 </Row>
@@ -47,10 +127,12 @@ export const Product = () => {
                     <ButtonAddStyle onClick={() => setIsOpenModalCreateProduct(true)}>
                         Thêm Mới
                     </ButtonAddStyle>
-                    <ModalCreateProduct
-                        isModalVisible={isOpenModalCreateProduct}
-                        handleCancel={() => setIsOpenModalCreateProduct(false)}
-                    />
+                    {isOpenModalCreateProduct && (
+                        <ModalCreateProduct
+                            isModalVisible={isOpenModalCreateProduct}
+                            handleCancel={() => setIsOpenModalCreateProduct(false)}
+                        />
+                    )}
                 </div>
             </div>
 
@@ -64,13 +146,18 @@ export const Product = () => {
                 <Col md={4} className="custom-col">
                     Tên SP
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     Loại SP
                 </Col>
-                <Col md={3} className="custom-col">
+                <Col md={2} className="custom-col">
                     Giá
                 </Col>
+
                 <Col md={3} className="custom-col">
+                    Đợt giảm giá
+                </Col>
+
+                <Col md={2} className="custom-col">
                     Giảm giá
                 </Col>
 
@@ -83,214 +170,66 @@ export const Product = () => {
                 <Col md={3} className="custom-col action-column"></Col>
             </Row>
 
-            <Row className="custom-row" onClick={() => setIsOpenModalDetailProduct(true)}>
-                <Col md={1} className="custom-col">
-                    1
-                </Col>
-                <Col md={2} className="custom-col">
-                    ZA10000
-                </Col>
-                <Col md={4} className="custom-col">
-                    Áo dài trung quốc chất lượng{" "}
-                </Col>
-                <Col md={3} className="custom-col">
-                    Quần
-                </Col>
-                <Col md={3} className="custom-col">
-                    {formatVND(100000)}
-                </Col>
-                <Col md={3} className="custom-col">
-                    10%
-                </Col>
-                <Col md={2} className="custom-col">
-                    374
-                </Col>
-                <Col md={3} className="custom-col">
-                    46
-                </Col>
-                <Col md={3} className="custom-col">
-                    <div className="action-column">
-                        <Button type="primary">Sửa</Button>
-                        <Button
-                            onClick={(e) => {
-                                setRemoveProductId(1);
-                                e.stopPropagation();
-                            }}
-                        >
-                            Xóa
-                        </Button>
-                    </div>
-                </Col>
-            </Row>
-            <Row className="custom-row" onClick={() => setIsOpenModalDetailProduct(true)}>
-                <Col md={1} className="custom-col">
-                    1
-                </Col>
-                <Col md={2} className="custom-col">
-                    ZA10000
-                </Col>
-                <Col md={4} className="custom-col">
-                    Áo dài trung quốc chất lượng{" "}
-                </Col>
-                <Col md={3} className="custom-col">
-                    Giày-Dép
-                </Col>
-                <Col md={3} className="custom-col">
-                    {formatVND(100000)}
-                </Col>
-                <Col md={3} className="custom-col">
-                    10%
-                </Col>
-                <Col md={2} className="custom-col">
-                    374
-                </Col>
-                <Col md={3} className="custom-col">
-                    46
-                </Col>
-                <Col md={3} className="custom-col">
-                    <div className="action-column">
-                        <Button type="primary">Sửa</Button>
-                        <Button
-                            onClick={(e) => {
-                                setRemoveProductId(1);
-                                e.stopPropagation();
-                            }}
-                        >
-                            Xóa
-                        </Button>
-                    </div>
-                </Col>
-            </Row>
+            {products?.result?.map((product: IProduct, index) => (
+                <Row key={product.id} className="custom-row">
+                    <Col md={1} className="custom-col">
+                        {index + 1}
+                    </Col>
+                    <Col md={2} className="custom-col">
+                        {product.code}
+                    </Col>
+                    <Col md={4} className="custom-col">
+                        {product.name}
+                    </Col>
+                    <Col md={2} className="custom-col">
+                        {product.category.name}
+                    </Col>
+                    <Col md={2} className="custom-col">
+                        {formatVND(product.price)}
+                    </Col>
 
-            <Row className="custom-row" onClick={() => setIsOpenModalDetailProduct(true)}>
-                <Col md={1} className="custom-col">
-                    1
-                </Col>
-                <Col md={2} className="custom-col">
-                    ZA10000
-                </Col>
-                <Col md={4} className="custom-col">
-                    Áo dài trung quốc chất lượng{" "}
-                </Col>
-                <Col md={3} className="custom-col">
-                    Quần
-                </Col>
-                <Col md={3} className="custom-col">
-                    {formatVND(100000)}
-                </Col>
-                <Col md={3} className="custom-col">
-                    10%
-                </Col>
-                <Col md={2} className="custom-col">
-                    374
-                </Col>
-                <Col md={3} className="custom-col">
-                    46
-                </Col>
-                <Col md={3} className="custom-col">
-                    <div className="action-column">
-                        <Button type="primary">Sửa</Button>
-                        <Button
-                            onClick={(e) => {
-                                setRemoveProductId(1);
-                                e.stopPropagation();
-                            }}
-                        >
-                            Xóa
-                        </Button>
-                    </div>
-                </Col>
-            </Row>
+                    <Col md={3} className="custom-col">
+                        {!!product.saleProducts.length && product.saleProducts[0].sale.name}
+                    </Col>
 
-            <Row className="custom-row" onClick={() => setIsOpenModalDetailProduct(true)}>
-                <Col md={1} className="custom-col">
-                    1
-                </Col>
-                <Col md={2} className="custom-col">
-                    ZA10000
-                </Col>
-                <Col md={4} className="custom-col">
-                    Áo dài trung quốc chất lượng{" "}
-                </Col>
-                <Col md={3} className="custom-col">
-                    Áo
-                </Col>
-                <Col md={3} className="custom-col">
-                    {formatVND(100000)}
-                </Col>
-                <Col md={3} className="custom-col">
-                    10%
-                </Col>
-                <Col md={2} className="custom-col">
-                    374
-                </Col>
-                <Col md={3} className="custom-col">
-                    46
-                </Col>
-                <Col md={3} className="custom-col">
-                    <div className="action-column">
-                        <Button type="primary">Sửa</Button>
-                        <Button
-                            onClick={(e) => {
-                                setRemoveProductId(1);
-                                e.stopPropagation();
-                            }}
-                        >
-                            Xóa
-                        </Button>
-                    </div>
-                </Col>
-            </Row>
+                    <Col md={2} className="custom-col">
+                        {!!product.saleProducts.length && (
+                            <>
+                                {product.saleProducts[0].saleType === ESaleType.CENT
+                                    ? formatVND(product.saleProducts[0].value)
+                                    : `${product.saleProducts[0].value}%`}
+                            </>
+                        )}
+                    </Col>
+                    <Col md={2} className="custom-col">
+                        {product.countViewers}
+                    </Col>
+                    <Col md={3} className="custom-col">
+                        {product.countBuyers}
+                    </Col>
+                    <Col md={3} className="custom-col">
+                        <div className="action-column">
+                            <Button type="primary" onClick={() => setUpdateProductId(product.id)}>
+                                Sửa
+                            </Button>
+                            <Button onClick={() => setRemoveProductId(product.id)}>Xóa</Button>
+                        </div>
+                    </Col>
+                </Row>
+            ))}
 
-            <Row className="custom-row" onClick={() => setIsOpenModalDetailProduct(true)}>
-                <Col md={1} className="custom-col">
-                    1
-                </Col>
-                <Col md={2} className="custom-col">
-                    ZA10000
-                </Col>
-                <Col md={4} className="custom-col">
-                    Áo dài trung quốc chất lượng{" "}
-                </Col>
-                <Col md={3} className="custom-col">
-                    Mũ
-                </Col>
-                <Col md={3} className="custom-col">
-                    {formatVND(100000)}
-                </Col>
-                <Col md={3} className="custom-col">
-                    10%
-                </Col>
-                <Col md={2} className="custom-col">
-                    374
-                </Col>
-                <Col md={3} className="custom-col">
-                    46
-                </Col>
-                <Col md={3} className="custom-col">
-                    <div className="action-column">
-                        <Button type="primary">Sửa</Button>
-                        <Button
-                            onClick={(e) => {
-                                setRemoveProductId(1);
-                                e.stopPropagation();
-                            }}
-                        >
-                            Xóa
-                        </Button>
-                    </div>
-                </Col>
-            </Row>
-
-            <ModalDetailProduct
-                isModalVisible={isOpenModalDetailProduct}
-                handleCancel={() => setIsOpenModalDetailProduct(false)}
-            />
+            {updateProductId && (
+                <ModalUpdateProduct
+                    isModalVisible={!!updateProductId}
+                    handleCancel={() => setUpdateProductId(undefined)}
+                    data={products?.result?.find((el) => el.id === updateProductId)}
+                />
+            )}
 
             <Modal
                 title="Xóa sản phẩm"
                 visible={!!removeProductId}
-                onOk={() => setRemoveProductId(undefined)}
+                onOk={() => handleRemoveProduct()}
                 onCancel={() => setRemoveProductId(undefined)}
                 okText="Đồng ý"
                 cancelText="Đóng"
@@ -325,7 +264,6 @@ const StyledProduct = styled.div`
         border-left: 1px solid #d9d9d9;
         border-right: 1px solid #d9d9d9;
         border-bottom: 1px solid #d9d9d9;
-        cursor: pointer;
     }
 
     .custom-row:hover {

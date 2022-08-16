@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { setToken } from "@utils";
-import { Form, Input, Image, Button } from "antd";
+import { Form, Input, Button } from "antd";
 import { useFormik } from "formik";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
