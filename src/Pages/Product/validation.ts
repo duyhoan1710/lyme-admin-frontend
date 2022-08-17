@@ -14,22 +14,22 @@ export const productOptionSchema = Yup.object().shape({
     size: Yup.string().required("Trường bắt buộc !"),
     color: Yup.string().required("Trường bắt buộc !"),
     quantity: Yup.number().required("Trường bắt buộc !"),
-    // image: Yup.mixed()
-    //     .test("image-required", "Trường bắt buộc !", (images: File[]) => {
-    //         if (!images || !images.length) return false;
+    image: Yup.mixed()
+        // .test("image-required", "Trường bắt buộc !", (images: File[]) => {
+        //     if (!images || !images.length) return false;
 
-    //         return true;
-    //     })
-    //     .test("image-extension", "Các đuôi file cho phép: .png, .jpg", (images: File[]) => {
-    //         if (!images) return true;
+        //     return true;
+        // })
+        .test("image-extension", "Các đuôi file cho phép: .png, .jpg", (images: File[]) => {
+            if (!images || !images.length) return true;
 
-    //         for (const image of images) {
-    //             const extensionFile = image?.name?.split(".")?.slice(-1)?.pop() || "";
+            for (const image of images) {
+                const extensionFile = image?.name?.split(".")?.slice(-1)?.pop() || "";
 
-    //             if (!["jpg", "png"].includes(extensionFile)) {
-    //                 return false;
-    //             }
-    //         }
-    //         return true;
-    //     }),
+                if (!["jpg", "png"].includes(extensionFile)) {
+                    return false;
+                }
+            }
+            return true;
+        }),
 });

@@ -6,13 +6,17 @@ import { RcFile } from "antd/lib/upload";
 import { createCategorySchema } from "./validation";
 import { createCategory } from "src/services/category";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { uploadFile } from "src/services/files";
+import { useState } from "react";
 
 export const ModalCreateCategory = ({ isModalVisible, handleCancel }: IModal) => {
     const queryClient = useQueryClient();
 
+    const [file, setFile] = useState<string>();
+
     const { mutate: handleCreateCategory } = useMutation(
         async () => {
-            await createCategory(formik.values);
+            await createCategory({ ...formik.values, image: file });
         },
         {
             onSuccess: async () => {
@@ -46,8 +50,26 @@ export const ModalCreateCategory = ({ isModalVisible, handleCancel }: IModal) =>
         return e?.fileList;
     };
 
-    const beforeUpload = (file: RcFile) => {
+    const beforeUpload = async (file: RcFile) => {
+        formik.setFieldValue("image", file);
+
+        const errors = await formik.validateForm();
+
+        if (!errors.image) {
+            const res = await uploadFile([file]);
+
+            if (res.status === 201) {
+                setFile(res.data.result.filenames[0]);
+            }
+        }
         return false;
+    };
+
+    const onChangeFiles = ({ file, fileList }: any) => {
+        if (!fileList.length) {
+            formik.setFieldValue("image", undefined);
+            setFile(undefined);
+        }
     };
 
     return (
@@ -81,7 +103,7 @@ export const ModalCreateCategory = ({ isModalVisible, handleCancel }: IModal) =>
                         name="logo"
                         listType="picture"
                         beforeUpload={beforeUpload}
-                        onChange={(e) => formik.setFieldValue("image", e.fileList[0])}
+                        onChange={(e) => onChangeFiles(e.file)}
                         maxCount={1}
                     >
                         <Button icon={<UploadOutlined />}>Click to upload</Button>

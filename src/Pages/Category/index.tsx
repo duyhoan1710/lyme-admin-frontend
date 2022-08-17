@@ -8,6 +8,7 @@ import { useCategory } from "src/hooks/useCategory";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCategory } from "src/services/category";
 import { ModalUpdateCategory } from "./update";
+import { getImage } from "@utils";
 
 export const Category = () => {
     const queryClient = useQueryClient();
@@ -50,7 +51,9 @@ export const Category = () => {
             title: "Image",
             dataIndex: "image",
             width: "250px",
-            render: (value) => <Image src={value} width={80} height={50} preview={false} />,
+            render: (value) => (
+                <Image src={value && getImage(value)} width={80} height={50} preview={false} />
+            ),
         },
         {
             title: "Name",
@@ -72,7 +75,9 @@ export const Category = () => {
                     key: index + 1,
                     action: (
                         <div className="action-column">
-                            <Button type="primary" onClick={() => setIdUpdateCategory(el.id)}>Sửa</Button>
+                            <Button type="primary" onClick={() => setIdUpdateCategory(el.id)}>
+                                Sửa
+                            </Button>
                             <Button onClick={() => setIdRemoveCategory(el.id)}>Xóa</Button>
                         </div>
                     ),
@@ -87,10 +92,12 @@ export const Category = () => {
                 <ButtonAddStyle onClick={() => setIsOpenCreateCategory(true)}>
                     Thêm Mới
                 </ButtonAddStyle>
-                <ModalCreateCategory
-                    isModalVisible={isOpenModalCreateCategory}
-                    handleCancel={() => setIsOpenCreateCategory(false)}
-                />
+                {isOpenModalCreateCategory && (
+                    <ModalCreateCategory
+                        isModalVisible={isOpenModalCreateCategory}
+                        handleCancel={() => setIsOpenCreateCategory(false)}
+                    />
+                )}
             </div>
 
             <Table

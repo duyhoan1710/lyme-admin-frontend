@@ -26,13 +26,13 @@ export interface IGetCategory extends IPaginate {
 
 export interface IPostCategory {
     name: string;
-    image?: File;
+    image?: string;
 }
 
 export interface IPutCategory {
     id: number;
     name: string;
-    image?: File;
+    image?: string;
 }
 
 export interface IDeleteCategory {

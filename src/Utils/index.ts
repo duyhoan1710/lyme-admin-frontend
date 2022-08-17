@@ -14,3 +14,7 @@ export function randomString(length = 6) {
 export function formatVND(value: number | string | undefined) {
     return Number(value).toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
 }
+
+export function getImage(value: string) {
+    return `${process.env.REACT_APP_API_URL}/files/${value}`;
+}

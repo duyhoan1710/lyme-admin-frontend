@@ -6,6 +6,9 @@ import { RcFile } from "antd/lib/upload";
 import { createCategorySchema } from "./validation";
 import { updateCategory } from "src/services/category";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { uploadFile } from "src/services/files";
+import { useState } from "react";
+import { getImage } from "@utils";
 
 interface ICategory extends IModal {
     data: {
@@ -17,9 +20,11 @@ interface ICategory extends IModal {
 export const ModalUpdateCategory = ({ isModalVisible, handleCancel, data }: ICategory) => {
     const queryClient = useQueryClient();
 
+    const [file, setFile] = useState<string>(data.image);
+
     const { mutate: handleUpdateCategory } = useMutation(
         async () => {
-            await updateCategory({ ...formik.values, id: data.id });
+            await updateCategory({ ...formik.values, image: file, id: data.id });
         },
         {
             onSuccess: async () => {
@@ -53,8 +58,26 @@ export const ModalUpdateCategory = ({ isModalVisible, handleCancel, data }: ICat
         return e?.fileList;
     };
 
-    const beforeUpload = (file: RcFile) => {
+    const beforeUpload = async (file: RcFile) => {
+        formik.setFieldValue("image", file);
+
+        const errors = await formik.validateForm();
+
+        if (!errors.image) {
+            const res = await uploadFile([file]);
+
+            if (res.status === 201) {
+                setFile(res.data.result.filenames[0]);
+            }
+        }
         return false;
+    };
+
+    const onChangeFiles = ({ file, fileList }: any) => {
+        if (!fileList.length) {
+            formik.setFieldValue("image", undefined);
+            setFile(data.image);
+        }
     };
 
     return (
@@ -86,16 +109,23 @@ export const ModalUpdateCategory = ({ isModalVisible, handleCancel, data }: ICat
                     validateStatus={formik.errors.image ? "error" : "success"}
                 >
                     <Upload
-                        name="logo"
                         listType="picture"
                         beforeUpload={beforeUpload}
-                        onChange={(e) => formik.setFieldValue("image", e.fileList[0])}
+                        onChange={(e) => onChangeFiles(e)}
                         maxCount={1}
                     >
                         <Button icon={<UploadOutlined />}>Click to upload</Button>
                     </Upload>
 
-                    {!formik.values.image && data.image && <Image src={formik.values.image} />}
+                    {!formik.values.image && file && (
+                        <Image
+                            preview={false}
+                            src={getImage(file)}
+                            width={80}
+                            height={50}
+                            style={{ marginTop: "15px" }}
+                        />
+                    )}
                 </Form.Item>
             </Form>
         </Modal>

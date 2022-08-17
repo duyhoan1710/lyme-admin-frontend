@@ -20,6 +20,7 @@ import { useSales } from "src/hooks/useSales";
 import { ESaleType } from "@enums";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createProduct } from "src/services/products";
+import { uploadFile } from "src/services/files";
 
 const { Option } = Select;
 
@@ -101,7 +102,10 @@ export const ProductOption = ({
                     <Upload
                         listType="picture"
                         beforeUpload={beforeUpload}
-                        onChange={(e) => formik.setFieldValue("images", e.fileList)}
+                        onChange={(e) => {
+                            formik.setFieldValue("images", e.fileList);
+                            console.log(e);
+                        }}
                         style={{ width: "100%" }}
                         multiple
                     >
@@ -170,9 +174,10 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
 
     const addNewProductOption = () => {
         const code: string = randomString(8);
+        const productOptionClone = { ...productOptionObject };
 
         setProductOptionObject({
-            ...productOptionObject,
+            ...productOptionClone,
             [code]: {
                 images: undefined,
                 size: "",
@@ -185,6 +190,28 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
     useEffect(() => {
         addNewProductOption();
     }, []);
+
+    const handleUploadFiles = async () => {
+        const productOptionClone: any = { ...productOptionObject };
+        let listImage: any = [];
+
+        Object.values(productOptionClone).forEach((productOption: any) => {
+            if (productOption.images) {
+                const images = productOption.images.map((image: any) => image.originFileObj);
+                listImage = [...listImage, ...images];
+            }
+        });
+
+        const res = await uploadFile(listImage);
+        const responseListImage = res.data.result.filenames;
+
+        Object.keys(productOptionClone).forEach((key) => {
+            if (productOptionClone[key] && productOptionClone[key]?.images.length) {
+                // productOptionClone
+            }
+        });
+        console.log(responseListImage);
+    };
 
     const { mutate: handleCreateProduct } = useMutation(
         async () => {
@@ -200,7 +227,7 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
             },
             onError: (res: any) => {
                 toast.error(res.response?.data?.message || res.message);
-            }
+            },
         }
     );
 
@@ -218,7 +245,8 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
         validationSchema: productSchema,
         onSubmit: (value) => {
             if (!Object.values(productOptionObjectError).includes(true)) {
-                handleCreateProduct();
+                handleUploadFiles();
+                // handleCreateProduct();
             }
         },
     });
@@ -415,7 +443,14 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                     />
                 ))}
 
-                <ButtonAddStyle onClick={addNewProductOption}>Thêm</ButtonAddStyle>
+                <ButtonAddStyle
+                    onClick={() => {
+                        setCountSubmit((preValue) => preValue + 1);
+                        addNewProductOption();
+                    }}
+                >
+                    Thêm
+                </ButtonAddStyle>
             </Form>
         </Modal>
     );

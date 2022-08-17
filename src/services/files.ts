@@ -1,9 +1,11 @@
 import axiosClient from "src/Api/axiosClient";
 
-export const uploadFile = async (file: File) => {
+export const uploadFile = async (files: File[]) => {
     const formData = new FormData();
-    formData.append("file", file);
+    files.forEach((file: File) => {
+        formData.append("files", file);
+    });
 
-    const res = await axiosClient.post("/upload-file", formData);
-    return res.data;
+    const res = await axiosClient.post("files/upload-file", formData);
+    return res;
 };
