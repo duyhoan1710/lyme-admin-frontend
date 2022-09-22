@@ -170,7 +170,7 @@ export const Product = () => {
                 <Col md={3} className="custom-col action-column"></Col>
             </Row>
 
-            {products?.result?.map((product: IProduct, index) => (
+            {products?.map((product: IProduct, index: number) => (
                 <Row key={product.id} className="custom-row">
                     <Col md={1} className="custom-col">
                         {index + 1}
@@ -222,7 +222,7 @@ export const Product = () => {
                 <ModalUpdateProduct
                     isModalVisible={!!updateProductId}
                     handleCancel={() => setUpdateProductId(undefined)}
-                    data={products?.result?.find((el) => el.id === updateProductId)}
+                    data={products?.find((el: any) => el.id === updateProductId)}
                 />
             )}
 

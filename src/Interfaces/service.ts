@@ -6,15 +6,7 @@ export interface IPaginate {
 }
 
 export interface IResponse {
-    data: {
-        message: string;
-        result: any[];
-        paging: {
-            page: string;
-            perPage: string;
-            total: number;
-        };
-    };
+    data: any;
     isLoading: boolean;
     error: any;
 }
@@ -117,4 +109,29 @@ export interface IProduct extends IPostProduct {
         value: number;
         sale: ISale;
     }[];
+}
+
+export interface IGetUsers extends IPaginate {
+    name?: string;
+}
+
+export interface IGetRooms extends IPaginate {
+    name?: string;
+}
+
+export interface IUser {
+    id: string;
+    full_name: string;
+}
+
+export interface IRoom {
+    id: string;
+    name: string;
+}
+
+export interface IMessage {
+    id?: string;
+    content: string;
+    room_id: string;
+    sender_id: string;
 }

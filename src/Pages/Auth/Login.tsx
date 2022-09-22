@@ -17,10 +17,11 @@ export const Login = () => {
                 ...formik.values,
             });
 
-            if (res.status === 200) {
-                setToken(res.data?.result?.accessToken);
+            if (res.status === 201) {
+                console.log(res.data);
+                setToken(res.data?.data?.accessToken);
                 toast.success("Đăng nhập thành công");
-                history.push("/categories");
+                history.push("/");
             }
         },
         {
@@ -32,7 +33,7 @@ export const Login = () => {
 
     const formik = useFormik({
         initialValues: {
-            username: "",
+            email: "",
             password: "",
         },
         validationSchema: loginSchema,
@@ -46,17 +47,17 @@ export const Login = () => {
 
                 <Form layout="horizontal" colon={false} labelAlign="left" autoComplete="off">
                     <Form.Item
-                        name="username"
-                        help={formik.errors.username}
-                        validateStatus={formik.errors.username ? "error" : "success"}
+                        name="email"
+                        help={formik.errors.email}
+                        validateStatus={formik.errors.email ? "error" : "success"}
                     >
                         <>
-                            <label className="label">Username</label>
+                            <label className="label">email</label>
                             <Input
                                 type="text"
                                 autoComplete="off"
                                 className="input"
-                                onChange={(e) => formik.setFieldValue("username", e.target.value)}
+                                onChange={(e) => formik.setFieldValue("email", e.target.value)}
                             />
                         </>
                     </Form.Item>

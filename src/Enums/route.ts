@@ -6,4 +6,6 @@ export enum EAppRoutes {
     EVALUATE = "/evaluates",
     SALES = "/sales",
     LOGIN = "/login",
+    CHAT = "/chats",
+    CHAT_DETAIL = "/chats/:chatType/:chatId",
 }

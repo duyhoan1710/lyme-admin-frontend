@@ -121,7 +121,7 @@ export const Category = () => {
                 <ModalUpdateCategory
                     isModalVisible={!!idUpdateCategory}
                     handleCancel={() => setIdUpdateCategory(undefined)}
-                    data={data?.result?.find((el) => el.id === idUpdateCategory)}
+                    data={data?.find((el: any) => el.id === idUpdateCategory)}
                 />
             )}
 
