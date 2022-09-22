@@ -7,7 +7,7 @@ import { getUsers } from "src/services/chat";
 export const useUsers = (params: IGetUsers): IResponse => {
     const { data, isLoading, error } = useQuery(["CHAT_USERS", params], async () => {
         const res = await getUsers(params);
-        return res;
+        return res.data;
     });
 
     return { data, isLoading, error };

@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { socket } from "src/Utils/socket";
 import { Button, Input } from "antd";
@@ -20,16 +20,32 @@ export const ChatDetail = () => {
     const msgRef = useRef<null | HTMLDivElement>(null);
 
     useEffect(() => {
-        sk.emit("joinRoom", { chatId, chatType });
+        if (chatType === "room") {
+            sk.emit("joinRoom", { chatId, chatType });
+            sk.on("joinedRoom", (payload) => {
+                console.log(payload);
+            });
+        }
+
+        sk.emit("getMessages", { chatId, chatType });
         sk.on("gotMessages", (payload) => {
             setListMessage(payload);
         });
+
+        return () => {
+            sk.off("joinedRoom");
+            sk.off("gotMessages");
+        };
     }, [chatType, chatId]);
 
     useEffect(() => {
         sk.on("sendedMessage", (payload) => {
             setListMessage((preValue) => [...preValue, payload]);
         });
+
+        return () => {
+            sk.off("sendedMessage");
+        };
     }, []);
 
     useEffect(() => {
@@ -70,9 +86,9 @@ export const ChatDetail = () => {
                 <div className="msg-list">
                     <div className="wrap-msg" ref={msgRef}>
                         {listMessage?.length ? (
-                            listMessage?.map((message: IMessage) => (
+                            listMessage?.map((message: IMessage, index) => (
                                 <div
-                                    key={message.id}
+                                    key={index}
                                     className={`${
                                         profile.id === message.sender_id
                                             ? "sender-message"

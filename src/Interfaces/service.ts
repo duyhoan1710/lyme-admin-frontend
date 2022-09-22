@@ -112,7 +112,7 @@ export interface IProduct extends IPostProduct {
 }
 
 export interface IGetUsers extends IPaginate {
-    name?: string;
+    keySearch?: string;
 }
 
 export interface IGetRooms extends IPaginate {
@@ -121,6 +121,7 @@ export interface IGetRooms extends IPaginate {
 
 export interface IUser {
     id: string;
+    email: string;
     full_name: string;
 }
 
