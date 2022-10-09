@@ -91,9 +91,6 @@ export interface IPostProduct {
     price?: number;
     code: string;
     categoryId: string;
-    saleId: string;
-    saleValue?: number;
-    saleType: ESaleType;
     description: string;
     subProducts: ISubProduct[];
 }

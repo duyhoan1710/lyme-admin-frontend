@@ -228,9 +228,6 @@ export const ModalUpdateProduct = ({ isModalVisible, handleCancel, data }: IUpda
             price: data.price,
             description: data.description,
             categoryId: data.categoryId,
-            saleId: data.saleId,
-            saleType: data.saleType,
-            saleValue: data.saleValue,
         },
         validationSchema: productSchema,
         onSubmit: (value) => {
@@ -336,46 +333,6 @@ export const ModalUpdateProduct = ({ isModalVisible, handleCancel, data }: IUpda
                     initialValue={formik.values.price}
                 >
                     <Input onChange={(e) => formik.setFieldValue("price", e.target.value)} />
-                </Form.Item>
-
-                <Form.Item
-                    label="Đợt sale"
-                    name="saleId"
-                    help={formik.errors.saleId}
-                    validateStatus={formik.errors.saleId ? "error" : "success"}
-                >
-                    <Select
-                        defaultValue={formik.values.saleId}
-                        onChange={(value) => formik.setFieldValue("saleId", value)}
-                    >
-                        {sales?.result?.map((sale: ISale) => (
-                            <Option key={sale.id} value={sale.id}>
-                                {sale.name}
-                            </Option>
-                        ))}
-                    </Select>
-                </Form.Item>
-
-                <Form.Item
-                    label="Giảm Giá"
-                    name="saleValue"
-                    help={formik.errors.saleValue}
-                    validateStatus={formik.errors.saleValue ? "error" : "success"}
-                    initialValue={formik.values.saleValue}
-                >
-                    <Input
-                        onChange={(e) => formik.setFieldValue("saleValue", e.target.value)}
-                        addonAfter={
-                            <Select
-                                defaultValue={formik.values.saleType || ESaleType.CENT}
-                                className="select-after"
-                                onChange={(value) => formik.setFieldValue("saleType", value)}
-                            >
-                                <Option value={ESaleType.CENT}>VND</Option>
-                                <Option value={ESaleType.PERCENT}>%</Option>
-                            </Select>
-                        }
-                    />
                 </Form.Item>
 
                 <Form.Item
