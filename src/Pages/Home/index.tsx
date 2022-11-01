@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { socket } from "src/Utils/socket";
 import { Button, Image, Input } from "antd";
-
-const newSocket = socket();
 
 interface IUser {
     id: string;
@@ -11,24 +8,8 @@ interface IUser {
 }
 
 export const Home = () => {
-    const [sk] = useState(newSocket.init());
     const [username, setUsername] = useState<IUser>();
     const [listUser, setListUser] = useState<IUser[]>([]);
-
-    const onClick = () => {
-        sk.emit("send-message", "test");
-    };
-    useEffect(() => {
-        sk.emit("send-message", "hello");
-
-        sk.on("receive-message", (payload) => {
-            console.log("abc", payload);
-        });
-
-        return () => {
-            sk.off("receive-message");
-        };
-    }, []);
 
     return (
         <StyledHome>

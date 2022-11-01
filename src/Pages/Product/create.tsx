@@ -11,7 +11,7 @@ import {UploadOutlined, CloseOutlined} from "@ant-design/icons";
 import {RcFile} from "antd/lib/upload";
 import TextArea from "antd/lib/input/TextArea";
 import {useEffect, useState} from "react";
-import {randomString} from "@utils";
+import {formatNumber, randomString} from "@utils";
 import {ButtonAddStyle} from "src/Components/Common/button";
 import {productOptionSchema, productSchema} from "./validation";
 import {toast} from "react-toastify";
@@ -341,6 +341,9 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
                     name="price"
                     help={formik.errors.price}
                     validateStatus={formik.errors.price ? "error" : "success"}
+                    normalize={(value) => {
+                        return formatNumber(value);
+                    }}
                 >
                     <Input onChange={(e) => formik.setFieldValue("price", e.target.value)}/>
                 </Form.Item>

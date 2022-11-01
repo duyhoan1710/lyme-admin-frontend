@@ -18,3 +18,8 @@ export function formatVND(value: number | string | undefined) {
 export function getImage(value: string) {
     return `${process.env.REACT_APP_API_URL}/files/${value}`;
 }
+
+export function formatNumber (value: string | number) {
+    return value.toString().replaceAll('.', '').replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+}
+

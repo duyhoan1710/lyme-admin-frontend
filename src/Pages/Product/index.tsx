@@ -279,6 +279,7 @@ const StyledProduct = styled.div`
         &:not(:last-child) {
             border-right: 1px solid #d9d9d9;
         }
+      word-break: break-all;
     }
 
     .action-column {
