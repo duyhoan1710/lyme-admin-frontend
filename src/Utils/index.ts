@@ -23,3 +23,6 @@ export function formatNumber (value: string | number) {
     return value.toString().replaceAll('.', '').replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
 }
 
+export function convertStringToNumber (value = ''): number {
+    return +value.replaceAll('.', '');
+}

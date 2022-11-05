@@ -84,7 +84,7 @@ export interface ISubProduct {
     size: string;
     color: string;
     quantity?: number;
-    images?: string[];
+    images: string[];
 }
 export interface IPostProduct {
     name: string;
@@ -114,4 +114,24 @@ export interface IProduct extends IPostProduct {
         value: number;
         sale: ISale;
     }[];
+}
+
+export interface IGetOrder extends IPaginate {
+    name?: string;
+}
+
+export interface IPostOrder {
+    name: string;
+}
+
+export interface IPutOrder extends IPostOrder {
+    id: number;
+}
+
+export interface IDeleteOrder {
+    id?: number;
+}
+
+export interface IOrder extends IPostOrder {
+    id: number;
 }

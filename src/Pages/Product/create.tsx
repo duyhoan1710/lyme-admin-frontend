@@ -5,33 +5,35 @@ import {
     IProductOptionObjectError,
     ISale,
 } from "@interfaces";
-import {Button, Col, Form, Input, Modal, Row, Upload, Select} from "antd";
-import {useFormik} from "formik";
-import {UploadOutlined, CloseOutlined} from "@ant-design/icons";
-import {RcFile} from "antd/lib/upload";
+import { Button, Col, Form, Input, Modal, Row, Upload, Select, Image } from "antd";
+import { useFormik } from "formik";
+import { UploadOutlined, CloseOutlined } from "@ant-design/icons";
+import { RcFile } from "antd/lib/upload";
 import TextArea from "antd/lib/input/TextArea";
-import {useEffect, useState} from "react";
-import {formatNumber, randomString} from "@utils";
-import {ButtonAddStyle} from "src/Components/Common/button";
-import {productOptionSchema, productSchema} from "./validation";
-import {toast} from "react-toastify";
-import {useCategory} from "src/hooks/useCategory";
-import {useSales} from "src/hooks/useSales";
-import {ESaleType} from "@enums";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {createProduct} from "src/services/products";
-import {uploadFile} from "src/services/files";
+import { useEffect, useState } from "react";
+import { convertStringToNumber, formatNumber, getImage, randomString } from "@utils";
+import { ButtonAddStyle } from "src/Components/Common/button";
+import { productOptionSchema, productSchema } from "./validation";
+import { toast } from "react-toastify";
+import { useCategory } from "src/hooks/useCategory";
+import { useSales } from "src/hooks/useSales";
+import { ESaleType } from "@enums";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createProduct } from "src/services/products";
+import { uploadFile } from "src/services/files";
 
-const {Option} = Select;
+const { Option } = Select;
 
 export const ProductOption = ({
-                                  setProductOptionObject,
-                                  productOptionObject,
-                                  setProductOptionObjectError,
-                                  productOptionObjectError,
-                                  productOptionKey,
-                                  countSubmit,
-                              }: {
+    handleUpdateValue,
+    setProductOptionObject,
+    productOptionObject,
+    setProductOptionObjectError,
+    productOptionObjectError,
+    productOptionKey,
+    countSubmit,
+}: {
+    handleUpdateValue: (key: string, data: any) => void;
     setProductOptionObject: (data: IProductOptionObject) => void;
     productOptionObject: IProductOptionObject;
     setProductOptionObjectError: (data: IProductOptionObjectError) => void;
@@ -39,6 +41,9 @@ export const ProductOption = ({
     productOptionKey: string;
     countSubmit: number;
 }) => {
+    const [imageUpload, setImageUpload] = useState(productOptionObject[productOptionKey].images);
+    const [isLoading, setIsLoading] = useState(false);
+
     const formik = useFormik({
         initialValues: productOptionObject[productOptionKey],
         validationSchema: productOptionSchema,
@@ -52,15 +57,16 @@ export const ProductOption = ({
             const errors = await formik.validateForm();
 
             if (!Object.keys(errors).length) {
-                const productObjectClone = {...productOptionObject};
-                productObjectClone[productOptionKey] = formik.values;
-                setProductOptionObject(productObjectClone);
+                handleUpdateValue(productOptionKey, {
+                    ...formik.values,
+                    images: imageUpload,
+                });
 
-                const productObjectErrorClone = {...productOptionObjectError};
+                const productObjectErrorClone = { ...productOptionObjectError };
                 productObjectErrorClone[productOptionKey] = false;
                 setProductOptionObjectError(productObjectErrorClone);
             } else {
-                const productObjectErrorClone = {...productOptionObjectError};
+                const productObjectErrorClone = { ...productOptionObjectError };
                 productObjectErrorClone[productOptionKey] = true;
                 setProductOptionObjectError(productObjectErrorClone);
             }
@@ -82,10 +88,31 @@ export const ProductOption = ({
         return false;
     };
 
+    useEffect(() => {
+        const upload = async () => {
+            if (formik.values.images.length) {
+                setIsLoading(true);
+                const res = await uploadFile(
+                    formik.values.images.map((image: any) => image.originFileObj)
+                );
+                setImageUpload([...imageUpload, ...res.data.result.filenames]);
+                setIsLoading(false);
+            }
+        };
+
+        upload();
+    }, [formik.values.images]);
+
     const removeProductOption = (key: string) => {
-        const productOptionClone = {...productOptionObject};
+        const productOptionClone = { ...productOptionObject };
         delete productOptionClone[key];
         setProductOptionObject(productOptionClone);
+    };
+
+    const onDeleteImage = (index: number) => {
+        const imageArr = [...imageUpload];
+        imageArr.splice(index, 1);
+        setImageUpload(imageArr);
     };
 
     return (
@@ -104,14 +131,33 @@ export const ProductOption = ({
                         beforeUpload={beforeUpload}
                         onChange={(e) => {
                             formik.setFieldValue("images", e.fileList);
-                            console.log(e);
                         }}
-                        style={{width: "100%"}}
+                        style={{ width: "100%" }}
                         multiple
+                        showUploadList={false}
                     >
-                        <Button icon={<UploadOutlined/>}>Click to Here</Button>
+                        <Button icon={<UploadOutlined />}>Click to Here</Button>
                     </Upload>
                 </Form.Item>
+
+                <div style={{ marginBottom: 15 }}>
+                    {imageUpload?.map((image, index) => (
+                        <div
+                            key={image}
+                            style={{ display: "flex", alignItems: "center", marginBottom: 15 }}
+                        >
+                            <Image src={getImage(image)} width={110} height={70} />
+                            <div
+                                style={{ fontSize: 20, marginLeft: 10, cursor: "pointer" }}
+                                onClick={() => onDeleteImage(index)}
+                            >
+                                x
+                            </div>
+                        </div>
+                    ))}
+
+                    {isLoading && "Loading..."}
+                </div>
             </Col>
 
             <Col md={6}>
@@ -122,7 +168,7 @@ export const ProductOption = ({
                     validateStatus={formik.errors.size ? "error" : "success"}
                     initialValue={formik.values.size}
                 >
-                    <Input onChange={(e) => formik.setFieldValue("size", e.target.value)}/>
+                    <Input onChange={(e) => formik.setFieldValue("size", e.target.value)} />
                 </Form.Item>
             </Col>
 
@@ -134,7 +180,7 @@ export const ProductOption = ({
                     validateStatus={formik.errors.color ? "error" : "success"}
                     initialValue={formik.values.color}
                 >
-                    <Input onChange={(e) => formik.setFieldValue("color", e.target.value)}/>
+                    <Input onChange={(e) => formik.setFieldValue("color", e.target.value)} />
                 </Form.Item>
             </Col>
 
@@ -146,22 +192,22 @@ export const ProductOption = ({
                     validateStatus={formik.errors.quantity ? "error" : "success"}
                     initialValue={formik.values.quantity}
                 >
-                    <Input onChange={(e) => formik.setFieldValue("quantity", e.target.value)}/>
+                    <Input onChange={(e) => formik.setFieldValue("quantity", e.target.value)} />
                 </Form.Item>
             </Col>
 
-            <Col md={1} style={{marginTop: "25px"}}>
-                <CloseOutlined onClick={() => removeProductOption(productOptionKey)}/>
+            <Col md={1} style={{ marginTop: "25px" }}>
+                <CloseOutlined onClick={() => removeProductOption(productOptionKey)} />
             </Col>
         </Row>
     );
 };
 
-export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
+export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => {
     const queryClient = useQueryClient();
 
-    const {data: categories} = useCategory({});
-    const {data: sales} = useSales({});
+    const { data: categories } = useCategory({});
+    const { data: sales } = useSales({});
 
     const [productOptionObject, setProductOptionObject] = useState<IProductOptionObject>({});
     const [productOptionObjectError, setProductOptionObjectError] =
@@ -174,12 +220,12 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
 
     const addNewProductOption = () => {
         const code: string = randomString(8);
-        const productOptionClone = {...productOptionObject};
+        const productOptionClone = { ...productOptionObject };
 
         setProductOptionObject({
             ...productOptionClone,
             [code]: {
-                images: undefined,
+                images: [],
                 size: "",
                 color: "",
                 quantity: undefined,
@@ -191,32 +237,11 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
         addNewProductOption();
     }, []);
 
-    const handleUploadFiles = async () => {
-        const productOptionClone: any = {...productOptionObject};
-        let listImage: any = [];
-
-        Object.values(productOptionClone).forEach((productOption: any) => {
-            if (productOption.images) {
-                const images = productOption.images.map((image: any) => image.originFileObj);
-                listImage = [...listImage, ...images];
-            }
-        });
-
-        const res = await uploadFile(listImage);
-        const responseListImage = res.data.result.filenames;
-
-        Object.keys(productOptionClone).forEach((key) => {
-            if (productOptionClone[key] && productOptionClone[key]?.images.length) {
-                // productOptionClone
-            }
-        });
-        console.log(responseListImage);
-    };
-
-    const {mutate: handleCreateProduct} = useMutation(
+    const { mutate: handleCreateProduct } = useMutation(
         async () => {
             await createProduct({
                 ...formik.values,
+                price: convertStringToNumber(formik.values.price),
                 subProducts: Object.values(productOptionObject),
             });
         },
@@ -238,22 +263,21 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
             price: undefined,
             description: "",
             categoryId: "",
-            // saleId: "",
-            // saleType: ESaleType.CENT,
-            // saleValue: undefined,
+            saleId: "",
+            saleType: ESaleType.CENT,
+            saleValue: undefined,
         },
         validationSchema: productSchema,
         onSubmit: (value) => {
             if (!Object.values(productOptionObjectError).includes(true)) {
-                handleUploadFiles();
                 handleCreateProduct();
             }
         },
     });
 
     const formItemLayout = {
-        labelCol: {span: 6},
-        wrapperCol: {span: 18},
+        labelCol: { span: 6 },
+        wrapperCol: { span: 18 },
     };
 
     const handleChangeSize = (value: string[]) => {
@@ -262,6 +286,13 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
 
     const handleChangeColor = (value: string[]) => {
         setColorList(value);
+    };
+
+    const handleUpdateValue = (key: string, data: any) => {
+        setProductOptionObject((preValue) => {
+            preValue[key] = data;
+            return preValue;
+        });
     };
 
     const generateProductOption = () => {
@@ -274,7 +305,7 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
                     productOptions = {
                         ...productOptions,
                         [code]: {
-                            images: undefined,
+                            images: [],
                             size,
                             color,
                             quantity: 50,
@@ -309,7 +340,7 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
                     help={formik.errors.code}
                     validateStatus={formik.errors.code ? "error" : "success"}
                 >
-                    <Input onChange={(e) => formik.setFieldValue("code", e.target.value)}/>
+                    <Input onChange={(e) => formik.setFieldValue("code", e.target.value)} />
                 </Form.Item>
 
                 <Form.Item
@@ -318,7 +349,7 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
                     help={formik.errors.name}
                     validateStatus={formik.errors.name ? "error" : "success"}
                 >
-                    <Input onChange={(e) => formik.setFieldValue("name", e.target.value)}/>
+                    <Input onChange={(e) => formik.setFieldValue("name", e.target.value)} />
                 </Form.Item>
 
                 <Form.Item
@@ -345,7 +376,48 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
                         return formatNumber(value);
                     }}
                 >
-                    <Input onChange={(e) => formik.setFieldValue("price", e.target.value)}/>
+                    <Input onChange={(e) => formik.setFieldValue("price", e.target.value)} />
+                </Form.Item>
+
+                <Form.Item
+                    label="Đợt Sale"
+                    name="saleId"
+                    help={formik.errors.saleId}
+                    validateStatus={formik.errors.saleId ? "error" : "success"}
+                >
+                    <Select onChange={(value) => formik.setFieldValue("saleId", value)}>
+                        {sales?.result?.map((sale: ISale) => (
+                            <Option key={sale.id} value={sale.id}>
+                                {sale.name}
+                            </Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+
+                <Form.Item
+                    label="Giảm Giá"
+                    name="saleValue"
+                    help={formik.errors.saleValue}
+                    validateStatus={formik.errors.saleValue ? "error" : "success"}
+                >
+                    <Input
+                        addonAfter={
+                            <Form.Item name="suffix" noStyle>
+                                <Select
+                                    style={{ width: 100 }}
+                                    onChange={(value) => {
+                                        formik.setFieldValue("saleType", value);
+                                    }}
+                                    defaultValue={formik.values.saleType}
+                                >
+                                    <Option value="cent">VND</Option>
+                                    <Option value="percent">%</Option>
+                                </Select>
+                            </Form.Item>
+                        }
+                        style={{ width: "100%" }}
+                        onChange={(e) => formik.setFieldValue("saleValue", e.target.value)}
+                    />
                 </Form.Item>
 
                 <Form.Item
@@ -360,17 +432,17 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
                     />
                 </Form.Item>
 
-                <Row style={{alignItems: "flex-end"}}>
-                    <Col md={18} style={{flexGrow: 1}}>
+                <Row style={{ alignItems: "flex-end" }}>
+                    <Col md={18} style={{ flexGrow: 1 }}>
                         <Form.Item
                             label="Size"
                             name="size"
-                            labelCol={{md: 8}}
-                            wrapperCol={{md: 16}}
+                            labelCol={{ md: 8 }}
+                            wrapperCol={{ md: 16 }}
                         >
                             <Select
                                 mode="tags"
-                                style={{width: "100%"}}
+                                style={{ width: "100%" }}
                                 onChange={handleChangeSize}
                             ></Select>
                         </Form.Item>
@@ -378,19 +450,19 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
                         <Form.Item
                             label="Màu sắc"
                             name="color"
-                            labelCol={{md: 8}}
-                            wrapperCol={{md: 16}}
+                            labelCol={{ md: 8 }}
+                            wrapperCol={{ md: 16 }}
                         >
                             <Select
                                 mode="tags"
-                                style={{width: "100%"}}
+                                style={{ width: "100%" }}
                                 onChange={handleChangeColor}
                             ></Select>
                         </Form.Item>
                     </Col>
                     <Col>
                         <ButtonAddStyle
-                            style={{marginBottom: "24px", marginLeft: "20px"}}
+                            style={{ marginBottom: "24px", marginLeft: "20px" }}
                             onClick={generateProductOption}
                         >
                             Generate
@@ -403,6 +475,7 @@ export const ModalCreateProduct = ({isModalVisible, handleCancel}: IModal) => {
                 {Object.keys(productOptionObject).map((key) => (
                     <ProductOption
                         key={key}
+                        handleUpdateValue={handleUpdateValue}
                         setProductOptionObject={setProductOptionObject}
                         productOptionObject={productOptionObject}
                         setProductOptionObjectError={setProductOptionObjectError}

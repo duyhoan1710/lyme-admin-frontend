@@ -5,11 +5,12 @@ import React, { useState } from "react";
 import { formatDateTime } from "src/Utils/dateTime";
 import styled from "styled-components";
 import { ModalUpdateOrder } from "./update";
-
+import { useOrder } from "../../hooks/useOrder";
 const { Option } = Select;
 const { Panel } = Collapse;
 
 export const Order = () => {
+    const { data: orders } = useOrder({});
     interface DataType {
         key: React.Key;
         id: number;
