@@ -1,19 +1,71 @@
-import { Form, Image, Input, Modal } from "antd";
+import { Form, Image, Input, Modal, Select } from "antd";
 import { useFormik } from "formik";
 import { IModal } from "src/Interfaces/component";
-import { formatVND } from "src/Utils";
+import { formatVND, getImage } from "src/Utils";
 import TextArea from "antd/lib/input/TextArea";
 import Table, { ColumnsType } from "antd/lib/table";
+import { useEffect, useState } from "react";
+import { formatDateTime } from "src/Utils/dateTime";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateOrder } from "src/services/order";
 
-export const ModalUpdateOrder = ({ isModalVisible, handleCancel }: IModal) => {
+const { Option } = Select;
+
+interface UpdateModal extends IModal {
+    data: any;
+}
+export const ModalUpdateOrder = ({ isModalVisible, handleCancel, data }: UpdateModal) => {
+    const queryClient = useQueryClient();
+
+    const [dataTable, setDataTable] = useState<any>();
+
+    const { mutate: handleUpdate } = useMutation(
+        () =>
+            updateOrder({
+                id: data.id,
+                status: formik.values.status,
+                shippingCode: formik.values.shippingCode,
+            }),
+        {
+            onSuccess: async () => {
+                await queryClient.invalidateQueries(["ORDER"]);
+                handleCancel();
+            },
+        }
+    );
+
+    useEffect(() => {
+        if (data && data.rawSubProduct) {
+            const subData = [...data.rawSubProduct];
+
+            setDataTable(
+                subData.map((subProduct, index) => ({
+                    ...subProduct,
+                    id: index + 1,
+                    price: subProduct.product.price,
+                    code: subProduct.product.code,
+                    name: subProduct.product.name,
+                    image: subProduct.images.length ? subProduct.images[0] : null,
+                }))
+            );
+        }
+    }, [data]);
+
     const formik = useFormik({
         initialValues: {
-            categoryName: "",
-            image: "",
+            code: data?.code,
+            receiverName: data?.receiverName,
+            receiverPhone: data?.receiverPhone,
+            address: data?.address,
+            note: data?.note,
+            totalAmount: data?.totalAmount,
+            status: data?.status,
+            createdDate: data?.createdDate,
+            shippingCode: data?.shippingCode,
         },
         // validationSchema: createCategorySchema,
         onSubmit: (value) => {
-            console.log(value);
+            handleUpdate();
         },
     });
 
@@ -32,7 +84,6 @@ export const ModalUpdateOrder = ({ isModalVisible, handleCancel }: IModal) => {
         color: string;
         quantity: number;
         price: number;
-        discount?: number;
     }
 
     const columns: ColumnsType<DataType> = [
@@ -43,7 +94,9 @@ export const ModalUpdateOrder = ({ isModalVisible, handleCancel }: IModal) => {
         {
             title: "Image",
             dataIndex: "image",
-            render: (value) => <Image src={value} width={80} height={50} preview={false} />,
+            render: (value) => (
+                <Image src={getImage(value)} width={80} height={50} preview={false} />
+            ),
         },
         {
             title: "Mã SP",
@@ -67,63 +120,8 @@ export const ModalUpdateOrder = ({ isModalVisible, handleCancel }: IModal) => {
             render: (value) => formatVND(value),
         },
         {
-            title: "Giảm giá",
-            dataIndex: "discount",
-            render: (value) => (value ? `${value}%` : ""),
-        },
-        {
             title: "Số lượng",
             dataIndex: "quantity",
-        },
-    ];
-
-    const data: DataType[] = [
-        {
-            key: "1",
-            id: 1,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
-            code: "ZA10101",
-            name: "lorem ayha",
-            size: "xl",
-            color: "red",
-            quantity: 2,
-            price: 990000,
-            discount: 20,
-        },
-        {
-            key: "1",
-            id: 1,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
-            code: "ZA10101",
-            name: "lorem ayha",
-            size: "xl",
-            color: "red",
-            quantity: 2,
-            price: 990000,
-            discount: 18,
-        },
-        {
-            key: "1",
-            id: 1,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
-            code: "ZA10101",
-            name: "lorem ayha",
-            size: "xl",
-            color: "red",
-            quantity: 2,
-            price: 990000,
-            discount: 10,
-        },
-        {
-            key: "1",
-            id: 1,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
-            code: "ZA10101",
-            name: "lorem ayha",
-            size: "xl",
-            color: "red",
-            quantity: 2,
-            price: 990000,
         },
     ];
 
@@ -139,39 +137,51 @@ export const ModalUpdateOrder = ({ isModalVisible, handleCancel }: IModal) => {
         >
             <Form colon={false} labelAlign="left" {...formItemLayout}>
                 <Form.Item label="Mã đơn hàng" initialValue="ZA10000">
-                    <Input disabled />
+                    <Input disabled value={formik.values.code} />
                 </Form.Item>
 
                 <Form.Item label="Nguời mua" initialValue="Nguyen Duy Hoan">
-                    <Input disabled />
+                    <Input disabled value={formik.values.receiverName} />
                 </Form.Item>
 
                 <Form.Item label="Số Điện Thoại" initialValue="0912345678">
-                    <Input disabled />
+                    <Input disabled value={formik.values.receiverPhone} />
                 </Form.Item>
 
                 <Form.Item label="Địa chỉ" initialValue="">
-                    <TextArea disabled rows={3} />
+                    <TextArea disabled rows={3} value={formik.values.address} />
                 </Form.Item>
 
                 <Form.Item label="Lời nhắn" initialValue="">
-                    <TextArea disabled rows={3} />
+                    <TextArea disabled rows={3} value={formik.values.note} />
                 </Form.Item>
 
                 <Form.Item label="Tổng tiền" initialValue={formatVND(374000)}>
-                    <Input disabled />
+                    <Input disabled value={formatVND(formik.values.totalAmount)} />
                 </Form.Item>
 
                 <Form.Item label="Mã vận đơn" initialValue="ZA10000">
-                    <Input />
+                    <Input
+                        value={formik.values.shippingCode}
+                        onChange={(e) => formik.setFieldValue("shippingCode", e.target.value)}
+                    />
                 </Form.Item>
 
                 <Form.Item label="Trạng thái" initialValue="PENDING">
-                    <Input />
+                    <Select
+                        style={{ width: "100%" }}
+                        onChange={(value) => formik.setFieldValue("status", value)}
+                        value={formik.values.status}
+                    >
+                        <Option value="ordered">Ordered</Option>
+                        <Option value="shipping">Shipping</Option>
+                        <Option value="received">Received</Option>
+                        <Option value="canceled">Canceled</Option>
+                    </Select>
                 </Form.Item>
 
                 <Form.Item label="Ngày tạo đơn hàng">
-                    <Input disabled />
+                    <Input disabled value={formatDateTime(formik.values.createdDate)} />
                 </Form.Item>
 
                 <Form.Item label="Ngày tạo vận đơn">
@@ -184,7 +194,15 @@ export const ModalUpdateOrder = ({ isModalVisible, handleCancel }: IModal) => {
             </Form>
 
             <h3>Sản phẩm</h3>
-            <Table columns={columns} dataSource={data} size="middle" bordered pagination={false} />
+            {dataTable && (
+                <Table
+                    columns={columns}
+                    dataSource={dataTable}
+                    size="middle"
+                    bordered
+                    pagination={false}
+                />
+            )}
         </Modal>
     );
 };

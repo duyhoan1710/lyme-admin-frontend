@@ -124,8 +124,10 @@ export interface IPostOrder {
     name: string;
 }
 
-export interface IPutOrder extends IPostOrder {
+export interface IPutOrder {
     id: number;
+    status: string;
+    shippingCode: string;
 }
 
 export interface IDeleteOrder {

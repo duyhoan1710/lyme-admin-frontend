@@ -1,7 +1,7 @@
-import { formatVND } from "@utils";
+import { formatVND, getImage } from "@utils";
 import { Button, Col, Image, Input, Modal, Row, Table, Select, Collapse } from "antd";
 import { ColumnsType } from "antd/lib/table";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formatDateTime } from "src/Utils/dateTime";
 import styled from "styled-components";
 import { ModalUpdateOrder } from "./update";
@@ -11,6 +11,9 @@ const { Panel } = Collapse;
 
 export const Order = () => {
     const { data: orders } = useOrder({});
+
+    const [subData, setSubData] = useState([]);
+
     interface DataType {
         key: React.Key;
         id: number;
@@ -27,12 +30,12 @@ export const Order = () => {
     const columns: ColumnsType<DataType> = [
         {
             title: "Id",
-            dataIndex: "id",
+            dataIndex: "key",
         },
         {
             title: "Image",
             dataIndex: "image",
-            render: (value) => <Image src={value} width={80} height={50} preview={false} />,
+            render: (value) => <Image src={getImage(value)} width={80} height={50} preview={false} />,
         },
         {
             title: "Mã SP",
@@ -66,56 +69,6 @@ export const Order = () => {
         },
     ];
 
-    const data: DataType[] = [
-        {
-            key: "1",
-            id: 1,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
-            code: "ZA10101",
-            name: "lorem ayha",
-            size: "xl",
-            color: "red",
-            quantity: 2,
-            price: 990000,
-            discount: 20,
-        },
-        {
-            key: "1",
-            id: 1,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
-            code: "ZA10101",
-            name: "lorem ayha",
-            size: "xl",
-            color: "red",
-            quantity: 2,
-            price: 990000,
-            discount: 18,
-        },
-        {
-            key: "1",
-            id: 1,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
-            code: "ZA10101",
-            name: "lorem ayha",
-            size: "xl",
-            color: "red",
-            quantity: 2,
-            price: 990000,
-            discount: 10,
-        },
-        {
-            key: "1",
-            id: 1,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSERP84zBqFN7MYx1wjq92ioyoXgpfeD2yy3g&usqp=CAU",
-            code: "ZA10101",
-            name: "lorem ayha",
-            size: "xl",
-            color: "red",
-            quantity: 2,
-            price: 990000,
-        },
-    ];
-
     const [removeOrderId, setRemoveOrderId] = useState<number>();
     const [updateOrderId, setUpdateOrderId] = useState<number>();
 
@@ -125,6 +78,23 @@ export const Order = () => {
 
     const onChange = (key: string | string[]) => {
         console.log(key);
+
+        if (key) {
+            const order = orders.result?.find((order) => order.id === key);
+            setSubData(
+                order?.rawSubProduct?.map((subProduct: any, index: number) => ({
+                    key: index + 1,
+                    id: subProduct.id,
+                    image: subProduct.image ?? subProduct.images[0],
+                    color: subProduct.color,
+                    size: subProduct.size,
+                    quantity: subProduct.quantity,
+                    code: subProduct.product.code,
+                    name: subProduct.product.name,
+                    price: subProduct.product.price,
+                }))
+            );
+        }
     };
 
     return (
@@ -185,258 +155,71 @@ export const Order = () => {
                 <Col md={3} className="custom-col action-column"></Col>
             </Row>
 
-            <Collapse onChange={onChange}>
-                <Panel
-                    header={
-                        <Row className="custom-row">
-                            <Col md={1} className="custom-col">
-                                1
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                ZA10000
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                hoan duy nguyen
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                0123456789
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                {formatVND(349000)}
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                AHDUYQAEH3AFC
-                            </Col>
-                            <Col md={2} className="custom-col">
-                                PEDDING
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                {formatDateTime()}
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                <div className="action-column">
-                                    <Button
-                                        type="primary"
-                                        onClick={(e) => {
-                                            setUpdateOrderId(1);
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        Sửa
-                                    </Button>
-                                    <Button
-                                        onClick={(e) => {
-                                            setRemoveOrderId(1);
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        Xóa
-                                    </Button>
-                                </div>
-                            </Col>
-                        </Row>
-                    }
-                    key="1"
-                    showArrow={false}
-                    className="custom-panel"
-                >
-                    <Table
-                        columns={columns}
-                        dataSource={data}
-                        size="middle"
-                        bordered
-                        pagination={false}
-                    />
-                </Panel>
-
-                <Panel
-                    header={
-                        <Row className="custom-row">
-                            <Col md={1} className="custom-col">
-                                1
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                ZA10000
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                hoan duy nguyen
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                0123456789
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                {formatVND(349000)}
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                AHDUYQAEH3AFC
-                            </Col>
-                            <Col md={2} className="custom-col">
-                                PEDDING
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                {formatDateTime()}
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                <div className="action-column">
-                                    <Button
-                                        type="primary"
-                                        onClick={(e) => {
-                                            setUpdateOrderId(1);
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        Sửa
-                                    </Button>
-                                    <Button
-                                        onClick={(e) => {
-                                            setRemoveOrderId(1);
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        Xóa
-                                    </Button>
-                                </div>
-                            </Col>
-                        </Row>
-                    }
-                    key="4"
-                    showArrow={false}
-                    className="custom-panel"
-                >
-                    <Table
-                        columns={columns}
-                        dataSource={data}
-                        size="middle"
-                        bordered
-                        pagination={false}
-                    />
-                </Panel>
-
-                <Panel
-                    header={
-                        <Row className="custom-row">
-                            <Col md={1} className="custom-col">
-                                1
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                ZA10000
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                hoan duy nguyen
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                0123456789
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                {formatVND(349000)}
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                AHDUYQAEH3AFC
-                            </Col>
-                            <Col md={2} className="custom-col">
-                                PEDDING
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                {formatDateTime()}
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                <div className="action-column">
-                                    <Button
-                                        type="primary"
-                                        onClick={(e) => {
-                                            setUpdateOrderId(1);
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        Sửa
-                                    </Button>
-                                    <Button
-                                        onClick={(e) => {
-                                            setRemoveOrderId(1);
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        Xóa
-                                    </Button>
-                                </div>
-                            </Col>
-                        </Row>
-                    }
-                    key="2"
-                    showArrow={false}
-                    className="custom-panel"
-                >
-                    <Table
-                        columns={columns}
-                        dataSource={data}
-                        size="middle"
-                        bordered
-                        pagination={false}
-                    />
-                </Panel>
-
-                <Panel
-                    header={
-                        <Row className="custom-row">
-                            <Col md={1} className="custom-col">
-                                1
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                ZA10000
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                hoan duy nguyen
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                0123456789
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                {formatVND(349000)}
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                AHDUYQAEH3AFC
-                            </Col>
-                            <Col md={2} className="custom-col">
-                                PEDDING
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                {formatDateTime()}
-                            </Col>
-                            <Col md={3} className="custom-col">
-                                <div className="action-column">
-                                    <Button
-                                        type="primary"
-                                        onClick={(e) => {
-                                            setUpdateOrderId(1);
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        Sửa
-                                    </Button>
-                                    <Button
-                                        onClick={(e) => {
-                                            setRemoveOrderId(1);
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        Xóa
-                                    </Button>
-                                </div>
-                            </Col>
-                        </Row>
-                    }
-                    key="3"
-                    showArrow={false}
-                    className="custom-panel"
-                >
-                    <Table
-                        columns={columns}
-                        dataSource={data}
-                        size="middle"
-                        bordered
-                        pagination={false}
-                    />
-                </Panel>
+            <Collapse accordion onChange={onChange}>
+                {orders?.result?.map((order, index) => (
+                    <Panel
+                        key={order.id}
+                        header={
+                            <Row className="custom-row">
+                                <Col md={1} className="custom-col">
+                                    {index + 1}
+                                </Col>
+                                <Col md={3} className="custom-col">
+                                    {order.code}
+                                </Col>
+                                <Col md={3} className="custom-col">
+                                    {order.receiverName}
+                                </Col>
+                                <Col md={3} className="custom-col">
+                                    {order.receiverPhone}
+                                </Col>
+                                <Col md={3} className="custom-col">
+                                    {formatVND(order.totalAmount)}
+                                </Col>
+                                <Col md={3} className="custom-col">
+                                    {order.shippingCode}
+                                </Col>
+                                <Col md={2} className="custom-col">
+                                    {order.status}
+                                </Col>
+                                <Col md={3} className="custom-col">
+                                    {formatDateTime(order.createdDate)}
+                                </Col>
+                                <Col md={3} className="custom-col">
+                                    <div className="action-column">
+                                        <Button
+                                            type="primary"
+                                            onClick={(e) => {
+                                                setUpdateOrderId(order.id);
+                                                e.stopPropagation();
+                                            }}
+                                        >
+                                            Sửa
+                                        </Button>
+                                        <Button
+                                            onClick={(e) => {
+                                                setRemoveOrderId(1);
+                                                e.stopPropagation();
+                                            }}
+                                        >
+                                            Xóa
+                                        </Button>
+                                    </div>
+                                </Col>
+                            </Row>
+                        }
+                        showArrow={false}
+                        className="custom-panel"
+                    >
+                        <Table
+                            columns={columns}
+                            dataSource={subData}
+                            size="middle"
+                            bordered
+                            pagination={false}
+                        />
+                    </Panel>
+                ))}
             </Collapse>
 
             <Modal
@@ -450,10 +233,13 @@ export const Order = () => {
                 Bạn có chắc chắn muốn xóa ?
             </Modal>
 
-            <ModalUpdateOrder
-                handleCancel={() => setUpdateOrderId(undefined)}
-                isModalVisible={!!updateOrderId}
-            />
+            {updateOrderId && (
+                <ModalUpdateOrder
+                    handleCancel={() => setUpdateOrderId(undefined)}
+                    isModalVisible={!!updateOrderId}
+                    data={orders?.result?.find((order) => order.id === updateOrderId)}
+                />
+            )}
         </StyledEvaluate>
     );
 };
