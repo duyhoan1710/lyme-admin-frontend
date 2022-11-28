@@ -121,7 +121,7 @@ export const ProductOption = React.memo(
 
         return (
             <Row>
-                <Col md={6}>
+                <Col md={5}>
                     <div>Ảnh</div>
                     <Form.Item
                         name={`image-${productOptionKey}`}
@@ -164,7 +164,19 @@ export const ProductOption = React.memo(
                     </div>
                 </Col>
 
-                <Col md={6}>
+                <Col md={5}>
+                <div>Code</div>
+                <Form.Item
+                    name={`code-${productOptionKey}`}
+                    help={formik.errors.code}
+                    validateStatus={formik.errors.code ? "error" : "success"}
+                    initialValue={formik.values.code}
+                >
+                    <Input onChange={(e) => formik.setFieldValue("code", e.target.value)} />
+                </Form.Item>
+            </Col>
+
+                <Col md={4}>
                     <div>Size</div>
                     <Form.Item
                         name={`size-${productOptionKey}`}
@@ -176,7 +188,7 @@ export const ProductOption = React.memo(
                     </Form.Item>
                 </Col>
 
-                <Col md={6}>
+                <Col md={4}>
                     <div>Color</div>
                     <Form.Item
                         name={`color-${productOptionKey}`}
@@ -237,6 +249,7 @@ export const ModalUpdateProduct = ({ isModalVisible, handleCancel, data }: IUpda
                 size: "",
                 color: "",
                 quantity: undefined,
+                code: "",
             },
         });
     };
@@ -258,6 +271,7 @@ export const ModalUpdateProduct = ({ isModalVisible, handleCancel, data }: IUpda
                 size: subProduct.size,
                 color: subProduct.color,
                 quantity: subProduct.quantity,
+                code: subProduct.code,
             };
         });
 
@@ -332,6 +346,7 @@ export const ModalUpdateProduct = ({ isModalVisible, handleCancel, data }: IUpda
                         size,
                         color,
                         quantity: 50,
+                        code: "",
                     },
                 };
             });

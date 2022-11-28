@@ -1,5 +1,5 @@
 import { formatVND, getImage } from "@utils";
-import { Button, Col, Image, Input, Modal, Row, Table, Select, Collapse } from "antd";
+import { Button, Col, Image, Input, Modal, Row, Table, Select, Collapse, Pagination } from "antd";
 import { ColumnsType } from "antd/lib/table";
 import React, { useEffect, useState } from "react";
 import { formatDateTime } from "src/Utils/dateTime";
@@ -10,7 +10,9 @@ const { Option } = Select;
 const { Panel } = Collapse;
 
 export const Order = () => {
-    const { data: orders } = useOrder({});
+    const [page, setPage] = useState(1);
+
+    const { data: orders } = useOrder({ page });
 
     const [subData, setSubData] = useState([]);
 
@@ -74,6 +76,10 @@ export const Order = () => {
 
     const handleChange = (value: string) => {
         console.log(`selected ${value}`);
+    };
+
+    const onChangePage = (page: number) => {
+        setPage(page);
     };
 
     const onChange = (key: string | string[]) => {
@@ -221,6 +227,17 @@ export const Order = () => {
                     </Panel>
                 ))}
             </Collapse>
+
+            {orders && orders.paging && (
+                <div style={{ marginTop: 20, display: 'flex', justifyContent: 'end'}}>
+                    <Pagination
+                        current={page}
+                        onChange={onChangePage}
+                        total={orders.paging.total}
+                        pageSize={20}
+                    />
+                </div>
+            )}
 
             <Modal
                 title="Xóa đơn hàng"

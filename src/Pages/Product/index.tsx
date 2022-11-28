@@ -2,7 +2,7 @@ import { ESaleType } from "@enums";
 import { ICategory, IProduct, ISale } from "@interfaces";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatVND } from "@utils";
-import { Button, Row, Col, Modal, Input, Select, Form } from "antd";
+import { Button, Row, Col, Modal, Input, Select, Form, Pagination } from "antd";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { ButtonAddStyle } from "src/Components/Common/button";
@@ -20,6 +20,7 @@ const { Option } = Select;
 export const Product = () => {
     const queryClient = useQueryClient();
 
+    const [page, setPage] = useState(1);
     const [searchCode, setSearchCode] = useState();
     const [searchCategoryId, setSearchCategoryId] = useState();
     const [orderBy, setOrderBy] = useState("");
@@ -28,6 +29,7 @@ export const Product = () => {
     const { data: products } = useProducts({
         filter: { code: searchCode || undefined, categoryId: searchCategoryId || undefined },
         order: orderBy && orderType ? { [orderBy]: orderType } : undefined,
+        page,
     });
     const { data: categories } = useCategory({});
     const { data: sales } = useSales({});
@@ -57,6 +59,9 @@ export const Product = () => {
         setSearchCode(value);
     }, 300);
 
+    const onChangePage = (page: number) => {
+        setPage(page);
+    };
     return (
         <StyledProduct>
             <div className="filter">
@@ -135,7 +140,6 @@ export const Product = () => {
                     )}
                 </div>
             </div>
-
             <Row className="custom-header">
                 <Col md={1} className="custom-col">
                     Id
@@ -169,7 +173,6 @@ export const Product = () => {
                 </Col>
                 <Col md={3} className="custom-col action-column"></Col>
             </Row>
-
             {products?.result?.map((product: IProduct, index) => (
                 <Row key={product.id} className="custom-row">
                     <Col md={1} className="custom-col">
@@ -218,6 +221,17 @@ export const Product = () => {
                 </Row>
             ))}
 
+            {products && products.paging && (
+                <div style={{ marginTop: 20, display: 'flex', justifyContent: 'end'}}>
+                    <Pagination
+                        current={page}
+                        onChange={onChangePage}
+                        total={products.paging.total}
+                        pageSize={20}
+                    />
+                </div>
+            )}
+
             {updateProductId && (
                 <ModalUpdateProduct
                     isModalVisible={!!updateProductId}
@@ -225,7 +239,6 @@ export const Product = () => {
                     data={products?.result?.find((el) => el.id === updateProductId)}
                 />
             )}
-
             <Modal
                 title="Xóa sản phẩm"
                 visible={!!removeProductId}
@@ -279,7 +292,7 @@ const StyledProduct = styled.div`
         &:not(:last-child) {
             border-right: 1px solid #d9d9d9;
         }
-      word-break: break-all;
+        word-break: break-all;
     }
 
     .action-column {

@@ -78,6 +78,7 @@ export interface IGetProduct extends IPaginate {
     order?: {
         [x: string]: string;
     };
+    page?: number;
 }
 
 export interface ISubProduct {
@@ -85,6 +86,7 @@ export interface ISubProduct {
     color: string;
     quantity?: number;
     images: string[];
+    code: string;
 }
 export interface IPostProduct {
     name: string;

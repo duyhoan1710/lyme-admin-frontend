@@ -173,10 +173,10 @@ export const ModalUpdateOrder = ({ isModalVisible, handleCancel, data }: UpdateM
                         onChange={(value) => formik.setFieldValue("status", value)}
                         value={formik.values.status}
                     >
-                        <Option value="ordered">Ordered</Option>
-                        <Option value="shipping">Shipping</Option>
-                        <Option value="received">Received</Option>
-                        <Option value="canceled">Canceled</Option>
+                        <Option value="ordered">Đã đặt hàng</Option>
+                        <Option value="shipping">Đang giao</Option>
+                        <Option value="received">Đã giao hàng</Option>
+                        <Option value="canceled">Đã huỷ</Option>
                     </Select>
                 </Form.Item>
 

@@ -117,7 +117,7 @@ export const ProductOption = ({
 
     return (
         <Row>
-            <Col md={6}>
+            <Col md={5}>
                 <div>Ảnh</div>
                 <Form.Item
                     name={`image-${productOptionKey}`}
@@ -160,7 +160,19 @@ export const ProductOption = ({
                 </div>
             </Col>
 
-            <Col md={6}>
+            <Col md={5}>
+                <div>Code</div>
+                <Form.Item
+                    name={`code-${productOptionKey}`}
+                    help={formik.errors.code}
+                    validateStatus={formik.errors.code ? "error" : "success"}
+                    initialValue={formik.values.code}
+                >
+                    <Input onChange={(e) => formik.setFieldValue("code", e.target.value)} />
+                </Form.Item>
+            </Col>
+
+            <Col md={4}>
                 <div>Size</div>
                 <Form.Item
                     name={`size-${productOptionKey}`}
@@ -172,7 +184,7 @@ export const ProductOption = ({
                 </Form.Item>
             </Col>
 
-            <Col md={6}>
+            <Col md={4}>
                 <div>Color</div>
                 <Form.Item
                     name={`color-${productOptionKey}`}
@@ -229,6 +241,7 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                 size: "",
                 color: "",
                 quantity: undefined,
+                code: ""
             },
         });
     };
@@ -309,6 +322,7 @@ export const ModalCreateProduct = ({ isModalVisible, handleCancel }: IModal) => 
                             size,
                             color,
                             quantity: 50,
+                            code: ""
                         },
                     };
                 });
